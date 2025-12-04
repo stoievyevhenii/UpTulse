@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="UpTulse.Dashboard/UpTulse.Dashboard.csproj" />
+  <Project Path="UpTulse.WebApi/UpTulse.WebApi.csproj" />
+</Solution>
