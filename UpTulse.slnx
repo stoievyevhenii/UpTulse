@@ -1,4 +1,8 @@
 <Solution>
-  <Project Path="UpTulse.Dashboard/UpTulse.Dashboard.csproj" />
+  <Project Path="UpTulse.Application/UpTulse.Application.csproj" />
+  <Project Path="UpTulse.Core/UpTulse.Core.csproj" />
+  <Project Path="UpTulse.DataAccess/UpTulse.DataAccess.csproj" />
+  <Project Path="UpTulse.Shared/UpTulse.Shared.csproj" />
   <Project Path="UpTulse.WebApi/UpTulse.WebApi.csproj" />
+  <Project Path="UpTulse.WebDashboard/UpTulse.WebDashboard.csproj" />
 </Solution>
