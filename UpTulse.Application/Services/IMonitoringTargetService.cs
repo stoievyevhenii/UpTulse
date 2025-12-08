@@ -8,7 +8,7 @@ namespace UpTulse.Application.Services
 
         Task DeleteAsync(Guid id);
 
-        Task<List<MonitoringTargetResponse>> GetAllAsync();
+        Task<IEnumerable<MonitoringTargetResponse>> GetAllAsync();
 
         Task<MonitoringTargetResponse> GetByIdAsync(Guid id);
 

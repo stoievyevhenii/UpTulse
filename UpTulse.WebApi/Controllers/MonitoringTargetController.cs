@@ -20,5 +20,11 @@ namespace UpTulse.WebApi.Controllers
         {
             return Ok(ApiResult<IEnumerable<MonitoringTargetResponse>>.Success(await _monitoringTargetService.GetAllAsync()));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(MonitoringTargetRequest request)
+        {
+            return Ok(ApiResult<MonitoringTargetResponse>.Success(await _monitoringTargetService.CreateAsync(request)));
+        }
     }
 }

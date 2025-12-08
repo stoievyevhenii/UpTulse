@@ -36,11 +36,11 @@ namespace UpTulse.Application.Services.Impl
             throw new NotImplementedException();
         }
 
-        public async Task<List<MonitoringTargetResponse>> GetAllAsync()
+        public async Task<IEnumerable<MonitoringTargetResponse>> GetAllAsync()
         {
             var records = await _monitoringTargetRepository.GetAllAsync();
 
-            var facetsRecords = await records.ToFacetsParallelAsync<MonitoringTargetResponse, MonitoringTarget>();
+            var facetsRecords = records.SelectFacets<MonitoringTarget, MonitoringTargetResponse>();
 
             return facetsRecords;
         }
