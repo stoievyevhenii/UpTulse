@@ -12,7 +12,7 @@ namespace UpTulse.DataAccess
 {
     public static class DataAccessDependencyInjection
     {
-        public static IServiceCollection AddDataAccess(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDatabase(configuration);
             services.AddIdentity();

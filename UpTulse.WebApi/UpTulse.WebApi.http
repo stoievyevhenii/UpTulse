@@ -1,6 +1,0 @@
-@UpTulse.WebApi_HostAddress = http://localhost:5070
-
-GET {{UpTulse.WebApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

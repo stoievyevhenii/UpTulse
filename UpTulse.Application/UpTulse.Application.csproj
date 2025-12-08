@@ -12,4 +12,9 @@
     <ProjectReference Include="..\UpTulse.Shared\UpTulse.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Facet" Version="5.1.10" />
+    <PackageReference Include="Facet.Extensions" Version="5.1.10" />
+  </ItemGroup>
+
 </Project>

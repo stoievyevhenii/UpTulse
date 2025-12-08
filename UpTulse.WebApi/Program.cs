@@ -1,26 +1,47 @@
+using UpTulse.Application;
+using UpTulse.DataAccess;
+using UpTulse.DataAccess.Persistence;
+using UpTulse.WebApi.Filters;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddProblemDetails()
+    .AddDataAccessLayer(builder.Configuration)
+    .AddApplicationLayer()
+    .AddOpenApi()
+    .AddHttpContextAccessor()
+    .AddControllers(config => config.Filters.Add<ValidateModelAttribute>());
+
+var app = builder.Build();
+
+using var scope = app.Services
+    .CreateScope();
+
+await AutomatedMigration
+    .MigrateAsync(scope.ServiceProvider);
+
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(_ => true)
+    .AllowCredentials()
+    );
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+await app.RunAsync();
+
 namespace UpTulse.WebApi
 {
-    public static class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddControllers();
-            builder.Services.AddOpenApi();
-
-            var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+    public partial class Program;
 }
