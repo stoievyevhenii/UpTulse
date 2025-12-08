@@ -2,6 +2,8 @@
 
 using UpTulse.Application.Services;
 using UpTulse.Application.Services.Impl;
+using UpTulse.Shared.Services;
+using UpTulse.Shared.Services.Impl;
 
 namespace UpTulse.Application
 {
@@ -16,6 +18,7 @@ namespace UpTulse.Application
 
         private static void AddServices(this IServiceCollection services)
         {
+            services.AddScoped<IClaimService, ClaimService>();
             services.AddScoped<IMonitoringTargetService, MonitoringTargetService>();
         }
     }

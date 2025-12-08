@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace UpTulse.Shared.Services.Impl
 {
-    internal class ClaimService
+    public class ClaimService : IClaimService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 

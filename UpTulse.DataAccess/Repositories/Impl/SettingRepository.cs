@@ -5,7 +5,7 @@ namespace UpTulse.DataAccess.Repositories.Impl
 {
     public class SettingRepository : BaseRepository<Settings>, ISettingRepository
     {
-        protected SettingRepository(DatabaseContext context) : base(context)
+        public SettingRepository(DatabaseContext context) : base(context)
         {
         }
     }

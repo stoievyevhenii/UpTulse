@@ -11,11 +11,10 @@ namespace UpTulse.DataAccess.Persistence
         public static async Task MigrateAsync(IServiceProvider services)
         {
             var context = services.GetRequiredService<DatabaseContext>();
+            await context.Database.MigrateAsync();
 
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             await DatabaseContextSeed.SeedUsersAsync(context, userManager);
-
-            await context.Database.MigrateAsync();
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿using UpTulse.Application.Models;
+﻿using Facet.Extensions;
+using Facet.Mapping;
+
+using UpTulse.Application.Models;
+using UpTulse.Core.Entities;
 using UpTulse.DataAccess.Repositories;
 
 namespace UpTulse.Application.Services.Impl
@@ -12,9 +16,19 @@ namespace UpTulse.Application.Services.Impl
             _monitoringTargetRepository = monitoringTargetRepository;
         }
 
-        public Task<MonitoringTargetResponse> CreateAsync(MonitoringTargetRequest request)
+        public async Task<MonitoringTargetResponse> CreateAsync(MonitoringTargetRequest request)
         {
-            throw new NotImplementedException();
+            var newRecord = new MonitoringTarget
+            {
+                Name = request.Name,
+                Url = request.Url,
+                Description = request.Description,
+                Method = request.Method,
+                Group = request.Group,
+            };
+
+            var response = await _monitoringTargetRepository.AddAsync(newRecord);
+            return new MonitoringTargetResponse(response);
         }
 
         public Task DeleteAsync(Guid id)
@@ -22,9 +36,13 @@ namespace UpTulse.Application.Services.Impl
             throw new NotImplementedException();
         }
 
-        public Task<List<MonitoringTargetResponse>> GetAllAsync()
+        public async Task<List<MonitoringTargetResponse>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var records = await _monitoringTargetRepository.GetAllAsync();
+
+            var facetsRecords = await records.ToFacetsParallelAsync<MonitoringTargetResponse, MonitoringTarget>();
+
+            return facetsRecords;
         }
 
         public Task<MonitoringTargetResponse> GetByIdAsync(Guid id)

@@ -5,7 +5,7 @@ namespace UpTulse.DataAccess.Repositories.Impl
 {
     public class MonitoringTargetRepository : BaseRepository<MonitoringTarget>, IMonitoringTargetRepository
     {
-        protected MonitoringTargetRepository(DatabaseContext context) : base(context)
+        public MonitoringTargetRepository(DatabaseContext context) : base(context)
         {
         }
     }

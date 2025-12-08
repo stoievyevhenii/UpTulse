@@ -5,7 +5,7 @@ namespace UpTulse.DataAccess.Repositories.Impl
 {
     public class MonitorGroupRepository : BaseRepository<MonitoringGroup>, IMonitorGroupRepository
     {
-        protected MonitorGroupRepository(DatabaseContext context) : base(context)
+        public MonitorGroupRepository(DatabaseContext context) : base(context)
         {
         }
     }
