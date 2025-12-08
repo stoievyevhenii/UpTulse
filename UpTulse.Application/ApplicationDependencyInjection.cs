@@ -20,6 +20,7 @@ namespace UpTulse.Application
         {
             services.AddScoped<IClaimService, ClaimService>();
             services.AddScoped<IMonitoringTargetService, MonitoringTargetService>();
+            services.AddScoped<IMonitoringGroupService, MonitoringGroupService>();
         }
     }
 }

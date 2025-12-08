@@ -2,7 +2,7 @@
 
 namespace UpTulse.DataAccess.Repositories
 {
-    public interface IMonitorGroupRepository : IBaseRepository<MonitoringGroup>
+    public interface IMonitoringGroupRepository : IBaseRepository<MonitoringGroup>
     {
     }
 }

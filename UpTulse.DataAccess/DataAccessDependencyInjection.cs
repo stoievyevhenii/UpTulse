@@ -62,7 +62,7 @@ namespace UpTulse.DataAccess
         private static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<ISettingRepository, SettingRepository>();
-            services.AddScoped<IMonitorGroupRepository, MonitorGroupRepository>();
+            services.AddScoped<IMonitoringGroupRepository, MonitoringGroupRepository>();
             services.AddScoped<IMonitoringTargetRepository, MonitoringTargetRepository>();
         }
     }

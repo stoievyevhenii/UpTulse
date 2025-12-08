@@ -4,11 +4,7 @@ using UpTulse.Core.Entities;
 
 namespace UpTulse.Application.Models
 {
-    [Facet(typeof(MonitoringTarget),
-        nameof(MonitoringTarget.CreatedBy),
-        nameof(MonitoringTarget.Group),
-        nameof(MonitoringTarget.Id))]
-    [GenerateDtos(Types = DtoTypes.Patch, OutputType = OutputType.Record)]
+    [Facet(typeof(MonitoringTarget), nameof(MonitoringTarget.CreatedBy), nameof(MonitoringTarget.Group), nameof(MonitoringTarget.Id))]
     public partial class MonitoringTargetRequest
     {
         public Guid? GroupId { get; set; }

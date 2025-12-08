@@ -7,11 +7,11 @@ using UpTulse.Shared.Models;
 
 namespace UpTulse.WebApi.Controllers
 {
-    public class MonitoringTargetController : ApiController
+    public class MonitoringTargetsController : ApiController
     {
         private readonly IMonitoringTargetService _monitoringTargetService;
 
-        public MonitoringTargetController(IMonitoringTargetService monitoringTargetService)
+        public MonitoringTargetsController(IMonitoringTargetService monitoringTargetService)
         {
             _monitoringTargetService = monitoringTargetService;
         }
