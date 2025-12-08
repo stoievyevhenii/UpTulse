@@ -16,6 +16,8 @@ namespace UpTulse.DataAccess.Repositories
 
         Task<int> CountAsync();
 
+        Task<TEntity> DeleteAsync(Expression<Func<TEntity, bool>> predicate);
+
         Task<TEntity> DeleteAsync(TEntity entity);
 
         Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);

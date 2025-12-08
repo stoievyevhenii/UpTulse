@@ -59,6 +59,19 @@ namespace UpTulse.DataAccess.Repositories.Impl
             return removedEntity;
         }
 
+        public async Task<TEntity> DeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            var entity = await DbSet
+                .Where(predicate)
+                .AsNoTracking()
+                .FirstOrDefaultAsync() ?? throw new DbRecordNotFoundException(typeof(TEntity));
+
+            var removedEntity = DbSet.Remove(entity).Entity;
+
+            await Context.SaveChangesAsync();
+            return removedEntity;
+        }
+
         public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await DbSet

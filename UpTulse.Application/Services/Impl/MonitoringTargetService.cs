@@ -1,8 +1,8 @@
 ﻿using Facet.Extensions;
-using Facet.Mapping;
 
 using UpTulse.Application.Models;
 using UpTulse.Core.Entities;
+using UpTulse.Core.Exceptions;
 using UpTulse.DataAccess.Repositories;
 
 namespace UpTulse.Application.Services.Impl
@@ -24,16 +24,17 @@ namespace UpTulse.Application.Services.Impl
                 Url = request.Url,
                 Description = request.Description,
                 Method = request.Method,
-                Group = request.Group,
+                //Group = request.Group,
             };
 
             var response = await _monitoringTargetRepository.AddAsync(newRecord);
             return new MonitoringTargetResponse(response);
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var response = await _monitoringTargetRepository.DeleteAsync(r => r.Id == id);
+            return response != null;
         }
 
         public async Task<IEnumerable<MonitoringTargetResponse>> GetAllAsync()
@@ -45,14 +46,25 @@ namespace UpTulse.Application.Services.Impl
             return facetsRecords;
         }
 
-        public Task<MonitoringTargetResponse> GetByIdAsync(Guid id)
+        public async Task<MonitoringTargetResponse> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var record = await _monitoringTargetRepository.GetFirstOrDefaultAsync(x => x.Id == id);
+            return new MonitoringTargetResponse(record);
         }
 
-        public Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetRequest request)
+        public async Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetRequest request)
         {
-            throw new NotImplementedException();
+            var oldRecord = await _monitoringTargetRepository.GetFirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new DbRecordNotFoundException($"Monitoring target record with ID {id} not found");
+
+            oldRecord.Name = request.Name;
+            oldRecord.Url = request.Url;
+            oldRecord.Description = request.Description;
+            oldRecord.Method = request.Method;
+            //oldRecord.Group = request.Group;
+
+            var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);
+            return new MonitoringTargetResponse(updatedRecord);
         }
     }
 }
