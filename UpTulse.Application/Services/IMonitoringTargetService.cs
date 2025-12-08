@@ -1,4 +1,5 @@
 ﻿using UpTulse.Application.Models;
+using UpTulse.Core.Entities;
 
 namespace UpTulse.Application.Services
 {
@@ -12,6 +13,6 @@ namespace UpTulse.Application.Services
 
         Task<MonitoringTargetResponse> GetByIdAsync(Guid id);
 
-        Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetRequest request);
+        Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetUpdateRequest request);
     }
 }

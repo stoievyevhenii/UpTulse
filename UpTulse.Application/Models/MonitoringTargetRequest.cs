@@ -8,6 +8,7 @@ namespace UpTulse.Application.Models
         nameof(MonitoringTarget.CreatedBy),
         nameof(MonitoringTarget.Group),
         nameof(MonitoringTarget.Id))]
+    [GenerateDtos(Types = DtoTypes.Patch, OutputType = OutputType.Record)]
     public partial class MonitoringTargetRequest
     {
         public Guid? GroupId { get; set; }

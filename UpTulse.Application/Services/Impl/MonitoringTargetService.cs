@@ -52,16 +52,15 @@ namespace UpTulse.Application.Services.Impl
             return new MonitoringTargetResponse(record);
         }
 
-        public async Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetRequest request)
+        public async Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetUpdateRequest request)
         {
             var oldRecord = await _monitoringTargetRepository.GetFirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new DbRecordNotFoundException($"Monitoring target record with ID {id} not found");
 
-            oldRecord.Name = request.Name;
-            oldRecord.Url = request.Url;
-            oldRecord.Description = request.Description;
-            oldRecord.Method = request.Method;
-            //oldRecord.Group = request.Group;
+            oldRecord.Name = string.IsNullOrWhiteSpace(request.Name) ? oldRecord.Name : request.Name;
+            oldRecord.Url = string.IsNullOrWhiteSpace(request.Url) ? oldRecord.Url : request.Url;
+            oldRecord.Description = string.IsNullOrWhiteSpace(request.Description) ? oldRecord.Description : request.Description;
+            oldRecord.Method = request.Method != null ? request.Method.Value : oldRecord.Method;
 
             var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);
             return new MonitoringTargetResponse(updatedRecord);
