@@ -10,7 +10,8 @@ namespace UpTulse.Core.Entities
         public string CreatedBy { get; set; } = default!;
         public string? Description { get; set; }
 
-        public MonitoringGroup? Group { get; set; }
+        public Guid GroupId { get; set; } = Guid.Empty;
+
         public MonitoringMethod Method { get; set; } = MonitoringMethod.Ping;
 
         [Required]

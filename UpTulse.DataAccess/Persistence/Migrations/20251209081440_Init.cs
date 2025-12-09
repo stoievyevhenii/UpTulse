@@ -67,6 +67,23 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MonitoringTargets",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Method = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MonitoringTargets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Settings",
                 columns: table => new
                 {
@@ -186,28 +203,6 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "MonitoringTargets",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    GroupId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Method = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MonitoringTargets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MonitoringTargets_MonitoringGroups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "MonitoringGroups",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -244,11 +239,6 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MonitoringTargets_GroupId",
-                table: "MonitoringTargets",
-                column: "GroupId");
         }
 
         /// <inheritdoc />
@@ -270,6 +260,9 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "MonitoringGroups");
+
+            migrationBuilder.DropTable(
                 name: "MonitoringTargets");
 
             migrationBuilder.DropTable(
@@ -280,9 +273,6 @@ namespace UpTulse.DataAccess.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "MonitoringGroups");
         }
     }
 }

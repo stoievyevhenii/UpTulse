@@ -5,10 +5,9 @@ using UpTulse.Core.Entities;
 namespace UpTulse.Application.Models
 {
     [Facet(typeof(MonitoringTarget),
-        exclude: [nameof(MonitoringTarget.CreatedBy), nameof(MonitoringTarget.Group), nameof(MonitoringTarget.Id)],
+        exclude: [nameof(MonitoringTarget.CreatedBy), nameof(MonitoringTarget.Id)],
         NullableProperties = true)]
     public partial class MonitoringTargetUpdateRequest
     {
-        public Guid? GroupId { get; set; }
     }
 }

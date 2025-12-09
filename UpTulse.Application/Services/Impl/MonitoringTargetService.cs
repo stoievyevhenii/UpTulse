@@ -1,5 +1,7 @@
 ﻿using Facet.Extensions;
+using Facet.Mapping;
 
+using UpTulse.Application.MapperConfigs;
 using UpTulse.Application.Models;
 using UpTulse.Core.Entities;
 using UpTulse.Core.Exceptions;
@@ -9,26 +11,24 @@ namespace UpTulse.Application.Services.Impl
 {
     public class MonitoringTargetService : IMonitoringTargetService
     {
+        private readonly MonitoringTargetMapperWithDi _monitoringTargetMapperWithDi;
         private readonly IMonitoringTargetRepository _monitoringTargetRepository;
 
-        public MonitoringTargetService(IMonitoringTargetRepository monitoringTargetRepository)
+        public MonitoringTargetService(MonitoringTargetMapperWithDi monitoringTargetMapperWithDi, IMonitoringTargetRepository monitoringTargetRepository)
         {
             _monitoringTargetRepository = monitoringTargetRepository;
+            _monitoringTargetMapperWithDi = monitoringTargetMapperWithDi;
         }
 
         public async Task<MonitoringTargetResponse> CreateAsync(MonitoringTargetRequest request)
         {
-            var newRecord = new MonitoringTarget
-            {
-                Name = request.Name,
-                Url = request.Url,
-                Description = request.Description,
-                Method = request.Method,
-                //Group = request.Group,
-            };
+            var newMonitoringTarget = new MonitoringTarget();
 
-            var response = await _monitoringTargetRepository.AddAsync(newRecord);
-            return new MonitoringTargetResponse(response);
+            newMonitoringTarget.ApplyFacet(request);
+
+            var response = await _monitoringTargetRepository.AddAsync(newMonitoringTarget);
+
+            return await response.ToFacetAsync(_monitoringTargetMapperWithDi);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
@@ -41,15 +41,15 @@ namespace UpTulse.Application.Services.Impl
         {
             var records = await _monitoringTargetRepository.GetAllAsync();
 
-            var facetsRecords = records.SelectFacets<MonitoringTarget, MonitoringTargetResponse>();
+            var mappedList = await records.ToFacetsAsync(_monitoringTargetMapperWithDi);
 
-            return facetsRecords;
+            return mappedList;
         }
 
         public async Task<MonitoringTargetResponse> GetByIdAsync(Guid id)
         {
             var record = await _monitoringTargetRepository.GetFirstOrDefaultAsync(x => x.Id == id);
-            return new MonitoringTargetResponse(record);
+            return await record.ToFacetAsync(_monitoringTargetMapperWithDi);
         }
 
         public async Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetUpdateRequest request)

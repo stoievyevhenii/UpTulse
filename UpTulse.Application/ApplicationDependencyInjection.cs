@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
+using UpTulse.Application.MapperConfigs;
 using UpTulse.Application.Services;
 using UpTulse.Application.Services.Impl;
 using UpTulse.Shared.Services;
@@ -11,9 +12,15 @@ namespace UpTulse.Application
     {
         public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
+            services.AddMapperConfigs();
             services.AddServices();
 
             return services;
+        }
+
+        private static void AddMapperConfigs(this IServiceCollection services)
+        {
+            services.AddScoped<MonitoringTargetMapperWithDi>();
         }
 
         private static void AddServices(this IServiceCollection services)

@@ -12,7 +12,7 @@ using UpTulse.DataAccess.Persistence;
 namespace UpTulse.DataAccess.Persistence.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20251208082226_Init")]
+    [Migration("20251209081440_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -193,7 +193,7 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("GroupId")
+                    b.Property<Guid>("GroupId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Method")
@@ -208,8 +208,6 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
 
                     b.ToTable("MonitoringTargets");
                 });
@@ -355,15 +353,6 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("UpTulse.Core.Entities.MonitoringTarget", b =>
-                {
-                    b.HasOne("UpTulse.Core.Entities.MonitoringGroup", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId");
-
-                    b.Navigation("Group");
                 });
 #pragma warning restore 612, 618
         }

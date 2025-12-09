@@ -37,7 +37,6 @@ namespace UpTulse.DataAccess.Repositories.Impl
         {
             return await DbSet
                 .Where(predicate)
-                .AsNoTracking()
                 .AnyAsync();
         }
 
@@ -63,7 +62,6 @@ namespace UpTulse.DataAccess.Repositories.Impl
         {
             var entity = await DbSet
                 .Where(predicate)
-                .AsNoTracking()
                 .FirstOrDefaultAsync() ?? throw new DbRecordNotFoundException(typeof(TEntity));
 
             var removedEntity = DbSet.Remove(entity).Entity;
@@ -76,20 +74,18 @@ namespace UpTulse.DataAccess.Repositories.Impl
         {
             return await DbSet
                 .Where(predicate)
-                .AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<List<TEntity>> GetAllAsync()
         {
-            return await DbSet.AsNoTracking().ToListAsync();
+            return await DbSet.ToListAsync();
         }
 
         public async Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> predicate)
         {
             var entity = await DbSet
                 .Where(predicate)
-                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             return entity == null ? throw new DbRecordNotFoundException(typeof(TEntity)) : await DbSet.Where(predicate).FirstOrDefaultAsync();
@@ -99,7 +95,6 @@ namespace UpTulse.DataAccess.Repositories.Impl
         {
             return await DbSet
                 .Where(predicate)
-                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
