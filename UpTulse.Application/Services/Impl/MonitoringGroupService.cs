@@ -38,9 +38,15 @@ namespace UpTulse.Application.Services.Impl
             return records.SelectFacets<MonitoringGroup, MonitoringGroupResponse>();
         }
 
-        public async Task<MonitoringGroupResponse> GetByIdAsync(Guid id)
+        public async Task<MonitoringGroupResponse?> GetByIdAsync(Guid id)
         {
             var record = await _monitoringGroupRepository.GetFirstOrDefaultAsync(r => r.Id == id);
+
+            if (record is null)
+            {
+                return null;
+            }
+
             return new MonitoringGroupResponse(record);
         }
 

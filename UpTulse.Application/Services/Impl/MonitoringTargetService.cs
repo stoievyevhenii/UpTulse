@@ -62,8 +62,13 @@ namespace UpTulse.Application.Services.Impl
             oldRecord.Description = string.IsNullOrWhiteSpace(request.Description) ? oldRecord.Description : request.Description;
             oldRecord.Method = request.Method != null ? request.Method.Value : oldRecord.Method;
 
+            if (request.GroupId is Guid)
+            {
+                oldRecord.GroupId = request.GroupId != null && request.GroupId != Guid.Empty ? request.GroupId.Value : oldRecord.GroupId;
+            }
+
             var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);
-            return new MonitoringTargetResponse(updatedRecord);
+            return await updatedRecord.ToFacetAsync(_monitoringTargetMapperWithDi);
         }
     }
 }
