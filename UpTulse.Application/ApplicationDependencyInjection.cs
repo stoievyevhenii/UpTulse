@@ -25,9 +25,13 @@ namespace UpTulse.Application
 
         private static void AddServices(this IServiceCollection services)
         {
+            services.AddHttpClient();
+
             services.AddScoped<IClaimService, ClaimService>();
             services.AddScoped<IMonitoringTargetService, MonitoringTargetService>();
             services.AddScoped<IMonitoringGroupService, MonitoringGroupService>();
+
+            services.AddSingleton<IMonitoringManagerService, MonitoringManagerService>();
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace UpTulse.Core.Enums
+namespace UpTulse.Shared.Enums
 {
-    public enum MonitoringMethod
+    public enum MonitoringProtocol
     {
         [Description("HTTP")]
         HTTP = 0,

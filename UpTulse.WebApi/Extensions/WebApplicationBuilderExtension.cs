@@ -1,5 +1,6 @@
 ﻿using UpTulse.Application;
 using UpTulse.DataAccess;
+using UpTulse.WebApi.BackgroundWorkers;
 using UpTulse.WebApi.Filters;
 
 namespace UpTulse.WebApi.Extensions
@@ -18,6 +19,8 @@ namespace UpTulse.WebApi.Extensions
             builder.Services.AddOpenApi();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddHostedService<UptimeBackgroundWorker>();
 
             return builder;
         }

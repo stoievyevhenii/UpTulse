@@ -13,7 +13,7 @@ namespace UpTulse.DataAccess.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<MonitoringTarget> builder)
         {
-            builder.Property(s => s.Url)
+            builder.Property(s => s.Address)
                 .IsRequired();
 
             builder.Property(s => s.Name)

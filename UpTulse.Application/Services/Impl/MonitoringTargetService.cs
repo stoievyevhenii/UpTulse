@@ -58,9 +58,9 @@ namespace UpTulse.Application.Services.Impl
                 ?? throw new DbRecordNotFoundException($"Monitoring target record with ID {id} not found");
 
             oldRecord.Name = string.IsNullOrWhiteSpace(request.Name) ? oldRecord.Name : request.Name;
-            oldRecord.Url = string.IsNullOrWhiteSpace(request.Url) ? oldRecord.Url : request.Url;
+            oldRecord.Address = string.IsNullOrWhiteSpace(request.Address) ? oldRecord.Address : request.Address;
             oldRecord.Description = string.IsNullOrWhiteSpace(request.Description) ? oldRecord.Description : request.Description;
-            oldRecord.Method = request.Method != null ? request.Method.Value : oldRecord.Method;
+            oldRecord.Protocol = request.Protocol != null ? request.Protocol.Value : oldRecord.Protocol;
 
             if (request.GroupId is Guid)
             {

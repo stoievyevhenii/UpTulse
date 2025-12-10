@@ -1,23 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 using UpTulse.Core.Common;
-using UpTulse.Core.Enums;
+using UpTulse.Shared.Enums;
 
 namespace UpTulse.Core.Entities
 {
     public class MonitoringTarget : BaseEntity, IAuditedEntity
     {
+        [Required]
+        public string Address { get; set; } = default!;
+
         public string CreatedBy { get; set; } = default!;
         public string? Description { get; set; }
 
         public Guid GroupId { get; set; } = Guid.Empty;
 
-        public MonitoringMethod Method { get; set; } = MonitoringMethod.Ping;
+        public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(1);
 
         [Required]
         public string Name { get; set; } = default!;
 
-        [Required]
-        public string Url { get; set; } = default!;
+        public MonitoringProtocol Protocol { get; set; } = MonitoringProtocol.Ping;
     }
 }
