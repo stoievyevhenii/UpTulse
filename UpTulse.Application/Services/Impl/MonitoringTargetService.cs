@@ -1,8 +1,11 @@
 ﻿using Facet.Extensions;
 using Facet.Mapping;
 
+using FluentValidation;
+
 using UpTulse.Application.MapperConfigs;
 using UpTulse.Application.Models;
+using UpTulse.Application.ModelsValidators;
 using UpTulse.Core.Entities;
 using UpTulse.Core.Exceptions;
 using UpTulse.DataAccess.Repositories;
@@ -11,30 +14,62 @@ namespace UpTulse.Application.Services.Impl
 {
     public class MonitoringTargetService : IMonitoringTargetService
     {
+        private readonly IMonitoringManagerService _monitoringManagerService;
         private readonly MonitoringTargetMapperWithDi _monitoringTargetMapperWithDi;
         private readonly IMonitoringTargetRepository _monitoringTargetRepository;
+        private readonly IValidator<MonitoringTargetRequest> _monitoringTargetRequestValidator;
 
-        public MonitoringTargetService(MonitoringTargetMapperWithDi monitoringTargetMapperWithDi, IMonitoringTargetRepository monitoringTargetRepository)
+        public MonitoringTargetService(
+            MonitoringTargetMapperWithDi monitoringTargetMapperWithDi,
+            IMonitoringTargetRepository monitoringTargetRepository,
+            IValidator<MonitoringTargetRequest> monitoringTargetRequestValidator,
+            IMonitoringManagerService monitoringManagerService)
         {
             _monitoringTargetRepository = monitoringTargetRepository;
             _monitoringTargetMapperWithDi = monitoringTargetMapperWithDi;
+            _monitoringManagerService = monitoringManagerService;
+            _monitoringTargetRequestValidator = monitoringTargetRequestValidator;
         }
 
         public async Task<MonitoringTargetResponse> CreateAsync(MonitoringTargetRequest request)
         {
+            var validationResult = await _monitoringTargetRequestValidator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+
+                throw new ModelValidationNotPassedException(string.Join(", ", errors));
+            }
+
+            var recordAlreadyExist = await _monitoringTargetRepository.AnyAsync(r => r.Name.Trim().ToUpper() == request.Name.Trim().ToUpper());
+
+            if (recordAlreadyExist)
+            {
+                throw new DbRecordAlreadyExistsException($"Monitoring target with name {request.Name} already exists.");
+            }
+
             var newMonitoringTarget = new MonitoringTarget();
 
             newMonitoringTarget.ApplyFacet(request);
 
             var response = await _monitoringTargetRepository.AddAsync(newMonitoringTarget);
 
-            return await response.ToFacetAsync(_monitoringTargetMapperWithDi);
+            await _monitoringManagerService.AddTargetAsync(request);
+
+            return await ReturnAfterMap(response);
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<MonitoringTargetResponse> DeleteAsync(Guid id)
         {
             var response = await _monitoringTargetRepository.DeleteAsync(r => r.Id == id);
-            return response != null;
+
+            if (response is not null)
+            {
+                await _monitoringManagerService.RemoveTargetAsync(response.Name);
+            }
+
+            return await ReturnAfterMap(response ?? throw new DbRecordNotFoundException($"Record with id {id} not found"));
         }
 
         public async Task<IEnumerable<MonitoringTargetResponse>> GetAllAsync()
@@ -49,7 +84,7 @@ namespace UpTulse.Application.Services.Impl
         public async Task<MonitoringTargetResponse> GetByIdAsync(Guid id)
         {
             var record = await _monitoringTargetRepository.GetFirstOrDefaultAsync(x => x.Id == id);
-            return await record.ToFacetAsync(_monitoringTargetMapperWithDi);
+            return await ReturnAfterMap(record);
         }
 
         public async Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetUpdateRequest request)
@@ -68,7 +103,12 @@ namespace UpTulse.Application.Services.Impl
             }
 
             var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);
-            return await updatedRecord.ToFacetAsync(_monitoringTargetMapperWithDi);
+            return await ReturnAfterMap(updatedRecord);
+        }
+
+        private async Task<MonitoringTargetResponse> ReturnAfterMap(MonitoringTarget monitoringTarget)
+        {
+            return await monitoringTarget.ToFacetAsync(_monitoringTargetMapperWithDi);
         }
     }
 }

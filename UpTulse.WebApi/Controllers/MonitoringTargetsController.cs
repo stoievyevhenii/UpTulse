@@ -19,7 +19,7 @@ namespace UpTulse.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok(ApiResult<bool>.Success(await _monitoringTargetService.DeleteAsync(id)));
+            return Ok(ApiResult<MonitoringTargetResponse>.Success(await _monitoringTargetService.DeleteAsync(id)));
         }
 
         [HttpGet("{id}")]

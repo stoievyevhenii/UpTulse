@@ -13,10 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Facet" Version="5.1.10" />
-    <PackageReference Include="Facet.Extensions" Version="5.1.10" />
-    <PackageReference Include="Facet.Extensions.EFCore" Version="5.1.10" />
-    <PackageReference Include="Facet.Extensions.EFCore.Mapping" Version="5.1.10" />
+    <PackageReference Include="Facet" Version="5.1.11" />
+    <PackageReference Include="Facet.Extensions" Version="5.1.11" />
+    <PackageReference Include="Facet.Extensions.EFCore" Version="5.1.11" />
+    <PackageReference Include="Facet.Extensions.EFCore.Mapping" Version="5.1.11" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
 
 </Project>

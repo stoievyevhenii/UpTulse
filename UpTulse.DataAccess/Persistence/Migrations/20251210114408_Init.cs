@@ -71,12 +71,13 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     GroupId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Method = table.Column<int>(type: "integer", nullable: false),
+                    Interval = table.Column<TimeSpan>(type: "interval", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: false)
+                    Protocol = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -7,7 +7,7 @@ namespace UpTulse.Application.Services
     {
         Task<MonitoringTargetResponse> CreateAsync(MonitoringTargetRequest request);
 
-        Task<bool> DeleteAsync(Guid id);
+        Task<MonitoringTargetResponse> DeleteAsync(Guid id);
 
         Task<IEnumerable<MonitoringTargetResponse>> GetAllAsync();
 

@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+
+using Microsoft.Extensions.DependencyInjection;
 
 using UpTulse.Application.MapperConfigs;
+using UpTulse.Application.Models;
+using UpTulse.Application.ModelsValidators;
 using UpTulse.Application.Services;
 using UpTulse.Application.Services.Impl;
 using UpTulse.Shared.Services;
@@ -14,6 +18,7 @@ namespace UpTulse.Application
         {
             services.AddMapperConfigs();
             services.AddServices();
+            services.AddModelsValidators();
 
             return services;
         }
@@ -21,6 +26,11 @@ namespace UpTulse.Application
         private static void AddMapperConfigs(this IServiceCollection services)
         {
             services.AddScoped<MonitoringTargetMapperWithDi>();
+        }
+
+        private static void AddModelsValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<MonitoringTargetRequest>, MonitoringTargetRequestValidator>();
         }
 
         private static void AddServices(this IServiceCollection services)
