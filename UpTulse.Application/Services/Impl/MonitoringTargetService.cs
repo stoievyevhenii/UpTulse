@@ -14,6 +14,7 @@ namespace UpTulse.Application.Services.Impl
 {
     public class MonitoringTargetService : IMonitoringTargetService
     {
+        private readonly IMonitoringGroupService _monitoringGroupService;
         private readonly IMonitoringManagerService _monitoringManagerService;
         private readonly MonitoringTargetMapperWithDi _monitoringTargetMapperWithDi;
         private readonly IMonitoringTargetRepository _monitoringTargetRepository;
@@ -23,11 +24,13 @@ namespace UpTulse.Application.Services.Impl
             MonitoringTargetMapperWithDi monitoringTargetMapperWithDi,
             IMonitoringTargetRepository monitoringTargetRepository,
             IValidator<MonitoringTargetRequest> monitoringTargetRequestValidator,
-            IMonitoringManagerService monitoringManagerService)
+            IMonitoringManagerService monitoringManagerService,
+            IMonitoringGroupService monitoringGroupService)
         {
             _monitoringTargetRepository = monitoringTargetRepository;
             _monitoringTargetMapperWithDi = monitoringTargetMapperWithDi;
             _monitoringManagerService = monitoringManagerService;
+            _monitoringGroupService = monitoringGroupService;
             _monitoringTargetRequestValidator = monitoringTargetRequestValidator;
         }
 
@@ -81,8 +84,13 @@ namespace UpTulse.Application.Services.Impl
             return mappedList;
         }
 
-        public async Task<MonitoringTargetResponse> GetByIdAsync(Guid id)
+        public async Task<MonitoringTargetResponse?> GetByIdAsync(Guid id)
         {
+            if (!await _monitoringTargetRepository.AnyAsync(x => x.Id == id))
+            {
+                return null;
+            }
+
             var record = await _monitoringTargetRepository.GetFirstOrDefaultAsync(x => x.Id == id);
             return await ReturnAfterMap(record);
         }
@@ -97,9 +105,13 @@ namespace UpTulse.Application.Services.Impl
             oldRecord.Description = string.IsNullOrWhiteSpace(request.Description) ? oldRecord.Description : request.Description;
             oldRecord.Protocol = request.Protocol != null ? request.Protocol.Value : oldRecord.Protocol;
 
-            if (request.GroupId is Guid)
+            if (request.GroupId is Guid guid && await _monitoringGroupService.AnyAsync(guid))
             {
                 oldRecord.GroupId = request.GroupId != null && request.GroupId != Guid.Empty ? request.GroupId.Value : oldRecord.GroupId;
+            }
+            else
+            {
+                throw new DbRecordNotFoundException($"Monitoring group with ID {request.GroupId} not found");
             }
 
             var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);

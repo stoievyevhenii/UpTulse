@@ -15,6 +15,11 @@ namespace UpTulse.Application.Services.Impl
             _monitoringGroupRepository = monitoringGroupRepository;
         }
 
+        public async Task<bool> AnyAsync(Guid id)
+        {
+            return await _monitoringGroupRepository.AnyAsync(r => r.Id == id);
+        }
+
         public async Task<MonitoringGroupResponse> CreateAsync(MonitoringGroupRequest request)
         {
             var response = await _monitoringGroupRepository.AddAsync(new()

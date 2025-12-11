@@ -11,7 +11,7 @@ namespace UpTulse.Application.Services
 
         Task<IEnumerable<MonitoringTargetResponse>> GetAllAsync();
 
-        Task<MonitoringTargetResponse> GetByIdAsync(Guid id);
+        Task<MonitoringTargetResponse?> GetByIdAsync(Guid id);
 
         Task<MonitoringTargetResponse> UpdateAsync(Guid id, MonitoringTargetUpdateRequest request);
     }
