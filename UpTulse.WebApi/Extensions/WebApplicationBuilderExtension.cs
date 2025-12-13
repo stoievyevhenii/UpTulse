@@ -1,4 +1,8 @@
-﻿using UpTulse.Application;
+﻿using FluentValidation;
+
+using UpTulse.Application;
+using UpTulse.Application.MapperConfigs;
+using UpTulse.Application.ModelsValidators;
 using UpTulse.DataAccess;
 using UpTulse.WebApi.BackgroundWorkers;
 using UpTulse.WebApi.Filters;
@@ -24,7 +28,6 @@ namespace UpTulse.WebApi.Extensions
 
             return builder;
         }
-
         public static WebApplicationBuilder ConfigureProjectLayers(this WebApplicationBuilder builder)
         {
             builder.Services
