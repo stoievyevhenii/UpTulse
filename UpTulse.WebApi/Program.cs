@@ -10,7 +10,6 @@ builder
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
-
 await AutomatedMigration.MigrateAsync(scope.ServiceProvider);
 
 app

@@ -17,10 +17,17 @@ namespace UpTulse.Application
         public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
             services.AddMapperConfigs();
+            services.AddSystemServices();
             services.AddServices();
+            services.AddManagers();
             services.AddModelsValidators();
 
             return services;
+        }
+
+        public static void AddManagers(this IServiceCollection services)
+        {
+            services.AddSingleton<IMonitoringManagerService, MonitoringManagerService>();
         }
 
         private static void AddMapperConfigs(this IServiceCollection services)
@@ -35,13 +42,15 @@ namespace UpTulse.Application
 
         private static void AddServices(this IServiceCollection services)
         {
-            services.AddHttpClient();
-
             services.AddScoped<IClaimService, ClaimService>();
             services.AddScoped<IMonitoringTargetService, MonitoringTargetService>();
             services.AddScoped<IMonitoringGroupService, MonitoringGroupService>();
+            services.AddScoped<IMonitoringHistoryService, MonitoringHistoryService>();
+        }
 
-            services.AddSingleton<IMonitoringManagerService, MonitoringManagerService>();
+        private static void AddSystemServices(this IServiceCollection services)
+        {
+            services.AddHttpClient();
         }
     }
 }
