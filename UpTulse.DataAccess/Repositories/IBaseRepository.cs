@@ -20,6 +20,8 @@ namespace UpTulse.DataAccess.Repositories
 
         Task<TEntity> DeleteAsync(TEntity entity);
 
+        Task<List<TEntity>> DeleteRangeAsync(Expression<Func<TEntity, bool>> predicate);
+
         Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
 
         Task<List<TEntity>> GetAllAsync();

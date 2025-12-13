@@ -21,6 +21,7 @@ namespace UpTulse.DataAccess.Persistence
         }
 
         public DbSet<MonitoringGroup> MonitoringGroups { get; set; }
+        public DbSet<MonitoringHistory> MonitoringHistories { get; set; }
         public DbSet<MonitoringTarget> MonitoringTargets { get; set; }
         public DbSet<Settings> Settings { get; set; }
 

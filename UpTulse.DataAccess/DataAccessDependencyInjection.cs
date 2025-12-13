@@ -64,6 +64,7 @@ namespace UpTulse.DataAccess
             services.AddScoped<ISettingRepository, SettingRepository>();
             services.AddScoped<IMonitoringGroupRepository, MonitoringGroupRepository>();
             services.AddScoped<IMonitoringTargetRepository, MonitoringTargetRepository>();
+            services.AddScoped<IMonitoringHistoryRepository, MonitoringHistoryRepository>();
         }
     }
 }

@@ -70,6 +70,22 @@ namespace UpTulse.DataAccess.Repositories.Impl
             return removedEntity;
         }
 
+        public async Task<List<TEntity>> DeleteRangeAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            var entities = await DbSet
+                .Where(predicate)
+                .ToListAsync();
+
+            if (entities.Count == 0)
+            {
+                throw new DbRecordNotFoundException(typeof(TEntity));
+            }
+
+            DbSet.RemoveRange(entities);
+            await Context.SaveChangesAsync();
+            return entities;
+        }
+
         public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await DbSet
