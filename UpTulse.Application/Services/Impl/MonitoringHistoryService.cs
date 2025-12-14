@@ -16,7 +16,7 @@ namespace UpTulse.Application.Services.Impl
             _monitoringHistoryRepository = monitoringHistoryRepository;
         }
 
-        public async Task<MonitoringHistoryResponse> AddNewRecord(MonitoringHistoryRequest request)
+        public async Task<MonitoringHistoryResponse> AddNewRecord(MonitoringCreationHistoryRequest request)
         {
             var newHistoryRecord = new MonitoringHistory();
             newHistoryRecord.ApplyFacet(request);
@@ -27,7 +27,7 @@ namespace UpTulse.Application.Services.Impl
 
         public async Task<IEnumerable<MonitoringHistoryResponse>> DeleteOlderThan(DateTimeOffset dateTime)
         {
-            var response = await _monitoringHistoryRepository.DeleteRangeAsync(r => r.TimeStamp < dateTime);
+            var response = await _monitoringHistoryRepository.DeleteRangeAsync(r => r.StartTimeStamp < dateTime);
 
             if (response is null || response.Count < 1)
             {
@@ -37,7 +37,7 @@ namespace UpTulse.Application.Services.Impl
             return response.Select(r => new MonitoringHistoryResponse(r));
         }
 
-        public async Task<IEnumerable<MonitoringHistoryResponse>> GetAllByTargetAsync(MonitoringHistoryRequest request)
+        public async Task<IEnumerable<MonitoringHistoryResponse>> GetAllByTargetAsync(MonitoringTargetHistoryRequest request)
         {
             var records = await _monitoringHistoryRepository.GetAllAsync(r => r.MonitoringTargetId == request.MonitoringTargetId);
 

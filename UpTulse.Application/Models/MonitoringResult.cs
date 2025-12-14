@@ -8,6 +8,8 @@ namespace UpTulse.Application.Models
         string Name,
         bool IsUp,
         long ResponseTimeMs,
-        DateTime Timestamp
+        Guid TargetId,
+        DateTimeOffset StartTimeStamp,
+        DateTimeOffset Timestamp
     );
 }

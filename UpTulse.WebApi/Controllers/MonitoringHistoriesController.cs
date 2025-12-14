@@ -2,6 +2,7 @@
 
 using UpTulse.Application.Models;
 using UpTulse.Application.Services;
+using UpTulse.Shared.Models;
 
 namespace UpTulse.WebApi.Controllers
 {
@@ -15,15 +16,17 @@ namespace UpTulse.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<MonitoringHistoryResponse>> GetAllByTargetAsync(MonitoringHistoryRequest request)
+        public async Task<IActionResult> GetAllByTargetAsync([FromQuery] MonitoringTargetHistoryRequest request)
         {
-            return await _monitoringHistoryService.GetAllByTargetAsync(request);
+            return Ok(ApiResult<IEnumerable<MonitoringHistoryResponse>>
+                .Success(await _monitoringHistoryService.GetAllByTargetAsync(request)));
         }
 
         [HttpGet("{id}")]
-        public async Task<MonitoringHistoryResponse> GetAsync(Guid id)
+        public async Task<IActionResult> GetAsync(Guid id)
         {
-            return await _monitoringHistoryService.GetAsync(id);
+            return Ok(ApiResult<MonitoringHistoryResponse>
+                .Success(await _monitoringHistoryService.GetAsync(id)));
         }
     }
 }

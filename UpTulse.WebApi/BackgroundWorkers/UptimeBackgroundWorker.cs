@@ -46,7 +46,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
         }
 
         private void LogResult(MonitoringResult result) => _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
-                result.Timestamp.ToLongTimeString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
+                result.Timestamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
 
         private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)
         {
@@ -75,6 +75,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
         {
             var sw = Stopwatch.StartNew();
             bool isUp = false;
+            var startTime = DateTimeOffset.UtcNow;
 
             try
             {
@@ -95,7 +96,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
             catch { isUp = false; }
 
             sw.Stop();
-            return new MonitoringResult(target.Name, isUp, sw.ElapsedMilliseconds, DateTime.UtcNow);
+
+            return new MonitoringResult(target.Name, isUp, sw.ElapsedMilliseconds, target.Id, startTime, DateTimeOffset.UtcNow);
         }
 
         private void StartMonitor(MonitoringTargetRequest target)
