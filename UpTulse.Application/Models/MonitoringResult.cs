@@ -10,6 +10,6 @@ namespace UpTulse.Application.Models
         long ResponseTimeMs,
         Guid TargetId,
         DateTimeOffset StartTimeStamp,
-        DateTimeOffset Timestamp
+        DateTimeOffset EndTimeStamp
     );
 }

@@ -15,14 +15,20 @@ namespace UpTulse.WebApi.BackgroundWorkers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UptimeBackgroundWorker> _logger;
+        private readonly IMonitoringHistoryService _monitoringHistoryService;
         private readonly IMonitoringManagerService _monitoringManager;
         private readonly Dictionary<string, CancellationTokenSource> _runningMonitors;
 
-        public UptimeBackgroundWorker(IMonitoringManagerService monitoringManager, ILogger<UptimeBackgroundWorker> logger, IHttpClientFactory httpClientFactory)
+        public UptimeBackgroundWorker(
+            IMonitoringManagerService monitoringManager,
+            ILogger<UptimeBackgroundWorker> logger,
+            IMonitoringHistoryService monitoringHistoryService,
+            IHttpClientFactory httpClientFactory)
         {
-            _monitoringManager = monitoringManager;
-            _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
+            _monitoringHistoryService = monitoringHistoryService;
+            _monitoringManager = monitoringManager;
             _runningMonitors = [];
         }
 
@@ -45,8 +51,20 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
         }
 
-        private void LogResult(MonitoringResult result) => _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
-                result.Timestamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
+        private void LogResult(MonitoringResult result)
+        {
+            _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
+               result.EndTimeStamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
+
+            _monitoringHistoryService.AddNewRecord(new()
+            {
+                IsUp = result.IsUp,
+                MonitoringTargetId = result.TargetId,
+                StartTimeStamp = result.StartTimeStamp,
+                EndTimeStamp = result.EndTimeStamp,
+                ResponseTimeInMs = result.ResponseTimeMs
+            });
+        }
 
         private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)
         {
