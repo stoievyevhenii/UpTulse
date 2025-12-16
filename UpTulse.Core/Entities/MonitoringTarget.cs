@@ -20,6 +20,8 @@ namespace UpTulse.Core.Entities
         [Required]
         public string Name { get; set; } = default!;
 
+        public NotificationChannel NotificationChannel { get; set; } = NotificationChannel.None;
+
         public MonitoringProtocol Protocol { get; set; } = MonitoringProtocol.Ping;
     }
 }

@@ -1,0 +1,12 @@
+﻿using UpTulse.Application.Providers.NotificationsFactory;
+
+namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
+{
+    public class EmptyChannelProvider : INotificationChannelProvider
+    {
+        public Task<bool> SendNotification(string message)
+        {
+            return Task.FromResult(true);
+        }
+    }
+}
