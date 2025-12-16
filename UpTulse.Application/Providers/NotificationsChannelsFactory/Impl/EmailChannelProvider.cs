@@ -6,6 +6,7 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
     {
         public Task<bool> SendNotification(string message)
         {
+            Console.WriteLine($"Email notification sent with message: {message}");
             return Task.FromResult(true);
         }
     }

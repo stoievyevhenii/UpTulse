@@ -6,6 +6,7 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
     {
         public Task<bool> SendNotification(string message)
         {
+            Console.WriteLine($"No notification will be send");
             return Task.FromResult(true);
         }
     }
