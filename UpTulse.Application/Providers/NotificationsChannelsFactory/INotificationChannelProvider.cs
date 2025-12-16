@@ -4,8 +4,8 @@ using System.Text;
 
 namespace UpTulse.Application.Providers.NotificationsFactory
 {
-    public interface INotificationsProvider
+    public interface INotificationChannelProvider
     {
-        Task<bool> SendNotification();
+        Task<bool> SendNotification(string message);
     }
 }
