@@ -73,6 +73,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 EndTimeStamp = result.EndTimeStamp,
                 ResponseTimeInMs = result.ResponseTimeMs,
             });
+
+            await _notificationSseManager.BroadcastAsync(result);
         }
 
         private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)

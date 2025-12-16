@@ -5,7 +5,7 @@ using UpTulse.Application.Services;
 using UpTulse.Core.Entities;
 using UpTulse.Shared.Models;
 
-namespace UpTulse.WebApi.Controllers
+namespace UpTulse.WebApi.Controllers.Api
 {
     public class MonitoringTargetsController : ApiController
     {

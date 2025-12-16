@@ -1,14 +1,16 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
+using UpTulse.Application.Models;
+
 namespace UpTulse.Application.Managers
 {
     public interface INotificationSseManager
     {
-        Task BroadcastAsync(string eventData);
+        Task BroadcastAsync(MonitoringResult result);
 
-        IAsyncEnumerable<string> ReadStream(Guid clientId, ChannelReader<string> reader, [EnumeratorCancellation] CancellationToken ct);
+        IAsyncEnumerable<MonitoringResult> ReadStream(Guid clientId, ChannelReader<MonitoringResult> reader, [EnumeratorCancellation] CancellationToken ct);
 
-        IAsyncEnumerable<string> Subscribe(CancellationToken ct);
+        IAsyncEnumerable<MonitoringResult> Subscribe(CancellationToken ct);
     }
 }

@@ -2,21 +2,23 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
+using UpTulse.Application.Models;
+
 namespace UpTulse.Application.Managers.Impl
 {
     public class NotificationSseManager : INotificationSseManager
     {
-        private readonly ConcurrentDictionary<Guid, ChannelWriter<string>> _clients = new();
+        private readonly ConcurrentDictionary<Guid, ChannelWriter<MonitoringResult>> _clients = new();
 
-        public async Task BroadcastAsync(string eventData)
+        public async Task BroadcastAsync(MonitoringResult result)
         {
             foreach (var client in _clients)
             {
-                await client.Value.WriteAsync(eventData);
+                await client.Value.WriteAsync(result);
             }
         }
 
-        public async IAsyncEnumerable<string> ReadStream(Guid clientId, ChannelReader<string> reader, [EnumeratorCancellation] CancellationToken ct)
+        public async IAsyncEnumerable<MonitoringResult> ReadStream(Guid clientId, ChannelReader<MonitoringResult> reader, [EnumeratorCancellation] CancellationToken ct)
         {
             try
             {
@@ -34,10 +36,10 @@ namespace UpTulse.Application.Managers.Impl
             }
         }
 
-        public IAsyncEnumerable<string> Subscribe(CancellationToken ct)
+        public IAsyncEnumerable<MonitoringResult> Subscribe(CancellationToken ct)
         {
             var clientId = Guid.NewGuid();
-            var channel = Channel.CreateUnbounded<string>();
+            var channel = Channel.CreateUnbounded<MonitoringResult>();
 
             _clients.TryAdd(clientId, channel.Writer);
 

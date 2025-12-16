@@ -4,7 +4,7 @@ using UpTulse.Application.Models;
 using UpTulse.Application.Services;
 using UpTulse.Shared.Models;
 
-namespace UpTulse.WebApi.Controllers
+namespace UpTulse.WebApi.Controllers.Api
 {
     public class MonitoringHistoriesController : ApiController
     {
