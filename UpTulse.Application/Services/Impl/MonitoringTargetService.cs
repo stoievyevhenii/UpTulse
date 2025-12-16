@@ -3,6 +3,7 @@ using Facet.Mapping;
 
 using FluentValidation;
 
+using UpTulse.Application.Managers;
 using UpTulse.Application.MapperConfigs;
 using UpTulse.Application.Models;
 using UpTulse.Application.ModelsValidators;
@@ -15,7 +16,7 @@ namespace UpTulse.Application.Services.Impl
     public class MonitoringTargetService : IMonitoringTargetService
     {
         private readonly IMonitoringGroupService _monitoringGroupService;
-        private readonly IMonitoringManagerService _monitoringManagerService;
+        private readonly IMonitoringTargetsManager _monitoringManagerService;
         private readonly MonitoringTargetMapperWithDi _monitoringTargetMapperWithDi;
         private readonly IMonitoringTargetRepository _monitoringTargetRepository;
         private readonly IValidator<MonitoringTargetRequest> _monitoringTargetRequestValidator;
@@ -24,7 +25,7 @@ namespace UpTulse.Application.Services.Impl
             MonitoringTargetMapperWithDi monitoringTargetMapperWithDi,
             IMonitoringTargetRepository monitoringTargetRepository,
             IValidator<MonitoringTargetRequest> monitoringTargetRequestValidator,
-            IMonitoringManagerService monitoringManagerService,
+            IMonitoringTargetsManager monitoringManagerService,
             IMonitoringGroupService monitoringGroupService)
         {
             _monitoringTargetRepository = monitoringTargetRepository;

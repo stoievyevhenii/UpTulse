@@ -2,6 +2,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
+using UpTulse.Application.Managers;
+using UpTulse.Application.Managers.Impl;
 using UpTulse.Application.MapperConfigs;
 using UpTulse.Application.Models;
 using UpTulse.Application.ModelsValidators;
@@ -27,7 +29,8 @@ namespace UpTulse.Application
 
         public static void AddManagers(this IServiceCollection services)
         {
-            services.AddSingleton<IMonitoringManagerService, MonitoringManagerService>();
+            services.AddSingleton<IMonitoringTargetsManager, MonitoringTargetsManager>();
+            services.AddSingleton<INotificationSseManager, NotificationSseManager>();
         }
 
         private static void AddMapperConfigs(this IServiceCollection services)

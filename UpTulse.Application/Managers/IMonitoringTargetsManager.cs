@@ -2,9 +2,9 @@
 
 using UpTulse.Application.Models;
 
-namespace UpTulse.Application.Services
+namespace UpTulse.Application.Managers
 {
-    public interface IMonitoringManagerService
+    public interface IMonitoringTargetsManager
     {
         ChannelReader<MonitoringOperation> OperationReader { get; }
 

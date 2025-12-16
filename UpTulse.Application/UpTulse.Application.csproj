@@ -20,4 +20,8 @@
     <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Sse\Impl\" />
+  </ItemGroup>
+
 </Project>

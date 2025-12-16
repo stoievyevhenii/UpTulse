@@ -4,14 +4,14 @@ using System.Threading.Channels;
 using UpTulse.Application.Enums;
 using UpTulse.Application.Models;
 
-namespace UpTulse.Application.Services.Impl
+namespace UpTulse.Application.Managers.Impl
 {
-    public class MonitoringManagerService : IMonitoringManagerService
+    public class MonitoringTargetsManager : IMonitoringTargetsManager
     {
         private readonly Channel<MonitoringOperation> _channel;
         private readonly ConcurrentDictionary<string, MonitoringTargetRequest> _targets;
 
-        public MonitoringManagerService()
+        public MonitoringTargetsManager()
         {
             _targets = [];
             _channel = Channel.CreateUnbounded<MonitoringOperation>();

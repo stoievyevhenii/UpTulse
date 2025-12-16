@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using Microsoft.Extensions.Logging;
 
 using UpTulse.Application.Enums;
+using UpTulse.Application.Managers;
 using UpTulse.Application.Models;
 using UpTulse.Application.Services;
 using UpTulse.Shared.Enums;
@@ -15,19 +16,22 @@ namespace UpTulse.WebApi.BackgroundWorkers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UptimeBackgroundWorker> _logger;
-        private readonly IMonitoringManagerService _monitoringManager;
+        private readonly IMonitoringTargetsManager _monitoringManager;
+        private readonly INotificationSseManager _notificationSseManager;
         private readonly Dictionary<string, CancellationTokenSource> _runningMonitors;
         private readonly IServiceProvider _serviceProvider;
 
         public UptimeBackgroundWorker(
-            IMonitoringManagerService monitoringManager,
+            IMonitoringTargetsManager monitoringManager,
             ILogger<UptimeBackgroundWorker> logger,
             IServiceProvider serviceProvider,
+            INotificationSseManager notificationSseManager,
             IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _notificationSseManager = notificationSseManager;
             _monitoringManager = monitoringManager;
             _runningMonitors = [];
         }
@@ -53,7 +57,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
         }
 
-        private void LogResult(MonitoringResult result)
+        private async Task LogResult(MonitoringResult result)
         {
             _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
                result.EndTimeStamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
@@ -61,14 +65,14 @@ namespace UpTulse.WebApi.BackgroundWorkers
             using var scope = _serviceProvider.CreateScope();
             var monitoringHistoryService = scope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
 
-            //monitoringHistoryService.AddNewRecord(new()
-            //{
-            //    IsUp = result.IsUp,
-            //    MonitoringTargetId = result.TargetId,
-            //    StartTimeStamp = result.StartTimeStamp,
-            //    EndTimeStamp = result.EndTimeStamp,
-            //    ResponseTimeInMs = result.ResponseTimeMs
-            //});
+            await monitoringHistoryService.AddNewRecord(new()
+            {
+                IsUp = result.IsUp,
+                MonitoringTargetId = result.TargetId,
+                StartTimeStamp = result.StartTimeStamp,
+                EndTimeStamp = result.EndTimeStamp,
+                ResponseTimeInMs = result.ResponseTimeMs,
+            });
         }
 
         private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)
@@ -80,7 +84,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 do
                 {
                     var result = await PerformCheckAsync(target, token);
-                    LogResult(result);
+                    await LogResult(result);
                 }
                 while (await timer.WaitForNextTickAsync(token));
             }
@@ -134,6 +138,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 StartMonitor(new()
                 {
+                    Id = monitoringTarget.Id,
                     Address = monitoringTarget.Address,
                     Description = monitoringTarget.Description,
                     GroupId = monitoringTarget.Group != null ? monitoringTarget.Group.Id : Guid.Empty,
