@@ -17,8 +17,8 @@ namespace UpTulse.Application.Schedulers
         public HistoryCleaner(IMonitoringHistoryService monitoringHistoryService)
         {
             _monitoringHistoryService = monitoringHistoryService;
-            _deleteAfter = int.TryParse(Environment.GetEnvironmentVariable(SchedulersEnv.HISTORY_CLEANER_SCHEDULE), out var port)
-                ? port
+            _deleteAfter = int.TryParse(Environment.GetEnvironmentVariable(SchedulersEnv.HISTORY_CLEANER_SCHEDULE), out var days)
+                ? days
                 : 7;
         }
 
