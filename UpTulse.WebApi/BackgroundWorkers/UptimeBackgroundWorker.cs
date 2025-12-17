@@ -21,6 +21,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
         private readonly INotificationSseManager _notificationSseManager;
         private readonly Dictionary<string, CancellationTokenSource> _runningMonitors;
         private readonly IServiceProvider _serviceProvider;
+        private readonly List<Guid> _unavailableTargetsGuids;
 
         public UptimeBackgroundWorker(
             IMonitoringTargetsManager monitoringManager,
@@ -36,6 +37,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             _monitoringManager = monitoringManager;
             _runningMonitors = [];
             _monitoringResults = [];
+            _unavailableTargetsGuids = [];
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -88,7 +90,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 .Where(r => r.TargetId == result.TargetId)
                 .OrderBy(r => r.StartTimeStamp);
 
-            if (searchebleRecords.Count() < 2)
+            if (searchebleRecords.Count() < 3)
             {
                 _monitoringResults.Add(result);
             }
@@ -96,16 +98,23 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 var allDown = searchebleRecords.All(r => !r.IsUp);
 
-                if (allDown)
+                if (!allDown && _unavailableTargetsGuids.Contains(result.TargetId))
                 {
-                    await MonitoringTargetStateIsChanged(result);
+                    _unavailableTargetsGuids.Remove(result.TargetId);
+                    await MonitoringTargetStateIsChanged(result, true);
+                }
+
+                if (allDown && !_unavailableTargetsGuids.Contains(result.TargetId))
+                {
+                    _unavailableTargetsGuids.Add(result.TargetId);
+                    await MonitoringTargetStateIsChanged(result, false);
                 }
 
                 _monitoringResults.RemoveAll(r => r.TargetId == result.TargetId);
             }
         }
 
-        private async Task MonitoringTargetStateIsChanged(MonitoringResult result)
+        private async Task MonitoringTargetStateIsChanged(MonitoringResult result, bool isUp)
         {
             using var notificationScope = _serviceProvider.CreateScope();
 
@@ -128,9 +137,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
             await notificationProviderService.SendMessageAsync(new()
             {
-                Subject = $"🔴 {monitoringTarget.Name} is DOWN",
-                Body = $"The monitoring target '{monitoringTarget.Name}' is DOWN as of {result.EndTimeStamp:u}. ",
-                Message = ""
+                Subject = isUp ? $"🟢 {monitoringTarget.Name} is UP" : $"🔴 {monitoringTarget.Name} is DOWN",
+                Body = DateTime.UtcNow.ToString("F"),
             });
         }
 

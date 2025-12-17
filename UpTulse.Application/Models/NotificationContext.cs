@@ -7,7 +7,6 @@ namespace UpTulse.Application.Models
     public class NotificationContext
     {
         public string Body { get; set; } = default!;
-        public string Message { get; set; } = default!;
         public string Subject { get; set; } = default!;
     }
 }
