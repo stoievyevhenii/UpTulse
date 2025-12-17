@@ -5,7 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder
     .ConfigureBaseComponents()
-    .ConfigureProjectLayers();
+    .ConfigureProjectLayers()
+    .ConfigureSchedulers();
 
 var app = builder.Build();
 

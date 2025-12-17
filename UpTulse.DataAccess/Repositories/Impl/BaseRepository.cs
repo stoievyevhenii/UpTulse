@@ -78,7 +78,7 @@ namespace UpTulse.DataAccess.Repositories.Impl
 
             if (entities.Count == 0)
             {
-                throw new DbRecordNotFoundException(typeof(TEntity));
+                return [];
             }
 
             DbSet.RemoveRange(entities);
