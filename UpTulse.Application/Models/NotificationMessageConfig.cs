@@ -8,7 +8,6 @@ namespace UpTulse.Application.Models
     {
         public string Body { get; set; } = default!;
         public string Message { get; set; } = default!;
-        public IReadOnlyList<string> Recipients { get; set; } = default!;
         public string Subject { get; set; } = default!;
     }
 }

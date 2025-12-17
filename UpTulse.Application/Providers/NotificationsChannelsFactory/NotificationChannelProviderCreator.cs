@@ -9,7 +9,7 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory
 
         public abstract INotificationChannelProvider CreateNotificationChannelsProvider();
 
-        public Task SendMessage(NotificationContext context)
+        public Task SendMessageAsync(NotificationContext context)
         {
             _notificationChannelsProvider ??= CreateNotificationChannelsProvider();
             return _notificationChannelsProvider.SendNotification(context);

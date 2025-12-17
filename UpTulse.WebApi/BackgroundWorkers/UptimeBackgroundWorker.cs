@@ -17,6 +17,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UptimeBackgroundWorker> _logger;
         private readonly IMonitoringTargetsManager _monitoringManager;
+        private readonly List<MonitoringResult> _monitoringResults;
         private readonly INotificationSseManager _notificationSseManager;
         private readonly Dictionary<string, CancellationTokenSource> _runningMonitors;
         private readonly IServiceProvider _serviceProvider;
@@ -34,6 +35,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             _notificationSseManager = notificationSseManager;
             _monitoringManager = monitoringManager;
             _runningMonitors = [];
+            _monitoringResults = [];
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -60,7 +62,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
         }
 
-        private async Task LogResult(MonitoringResult result)
+        private async Task AnalyzeResultsAndLog(MonitoringResult result)
         {
             if (_logger.IsEnabled(LogLevel.Critical))
             {
@@ -68,8 +70,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
                    result.EndTimeStamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
             }
 
-            using var scope = _serviceProvider.CreateScope();
-            var monitoringHistoryService = scope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
+            using var monitoringScope = _serviceProvider.CreateScope();
+            var monitoringHistoryService = monitoringScope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
 
             await monitoringHistoryService.AddNewRecord(new()
             {
@@ -81,6 +83,55 @@ namespace UpTulse.WebApi.BackgroundWorkers
             });
 
             await _notificationSseManager.BroadcastAsync(result);
+
+            var searchebleRecords = _monitoringResults
+                .Where(r => r.TargetId == result.TargetId)
+                .OrderBy(r => r.StartTimeStamp);
+
+            if (searchebleRecords.Count() < 2)
+            {
+                _monitoringResults.Add(result);
+            }
+            else
+            {
+                var allDown = searchebleRecords.All(r => !r.IsUp);
+
+                if (allDown)
+                {
+                    await MonitoringTargetStateIsChanged(result);
+                }
+
+                _monitoringResults.RemoveAll(r => r.TargetId == result.TargetId);
+            }
+        }
+
+        private async Task MonitoringTargetStateIsChanged(MonitoringResult result)
+        {
+            using var notificationScope = _serviceProvider.CreateScope();
+
+            var monitoringTargetsService = notificationScope.ServiceProvider
+                .GetRequiredService<IMonitoringTargetService>();
+
+            var monitoringTarget = await monitoringTargetsService.GetByIdAsync(result.TargetId);
+
+            if (monitoringTarget == null)
+            {
+                _logger.LogWarning("Monitoring target not found: {TargetId}", result.TargetId);
+                return;
+            }
+
+            var notificationChannelProviderService = notificationScope.ServiceProvider
+                .GetRequiredService<INotificationChannelProviderAccessor>();
+
+            var notificationProviderService = notificationChannelProviderService
+                .GetProviderCreator(monitoringTarget.NotificationChannel);
+
+            await notificationProviderService.SendMessageAsync(new()
+            {
+                Subject = $"🔴 {monitoringTarget.Name} is DOWN",
+                Body = $"The monitoring target '{monitoringTarget.Name}' is DOWN as of {result.EndTimeStamp:u}. ",
+                Message = ""
+            });
         }
 
         private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)
@@ -92,7 +143,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 do
                 {
                     var result = await PerformCheckAsync(target, token);
-                    await LogResult(result);
+                    await AnalyzeResultsAndLog(result);
                 }
                 while (await timer.WaitForNextTickAsync(token));
             }
@@ -124,7 +175,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 else
                 {
                     using var ping = new Ping();
-                    var reply = await ping.SendPingAsync(hostNameOrAddress: target.Address, timeout: target.Interval, cancellationToken: token);
+                    var reply = await ping.SendPingAsync(hostNameOrAddress: target.Address, timeout: TimeSpan.FromSeconds(5), cancellationToken: token);
                     isUp = reply.Status == IPStatus.Success;
                 }
             }
