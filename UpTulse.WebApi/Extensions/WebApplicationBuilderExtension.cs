@@ -49,7 +49,7 @@ namespace UpTulse.WebApi.Extensions
                     .StartNow()
                     .WithIdentity("HistoryCleaner-trigger")
                     .WithSimpleSchedule(x => x
-                        .WithIntervalInSeconds(10)
+                        .WithIntervalInHours(24)
                         .RepeatForever())
                 );
             });
