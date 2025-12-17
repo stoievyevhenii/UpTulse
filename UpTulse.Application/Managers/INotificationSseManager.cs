@@ -9,7 +9,7 @@ namespace UpTulse.Application.Managers
     {
         Task BroadcastAsync(MonitoringResult result);
 
-        IAsyncEnumerable<MonitoringResult> ReadStream(Guid clientId, ChannelReader<MonitoringResult> reader, [EnumeratorCancellation] CancellationToken ct);
+        IAsyncEnumerable<MonitoringResult> ReadStream(Guid clientId, ChannelReader<MonitoringResult> reader, CancellationToken ct);
 
         IAsyncEnumerable<MonitoringResult> Subscribe(CancellationToken ct);
     }
