@@ -38,7 +38,10 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Reactive Uptime Worker Started.");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Reactive Uptime Worker Started.");
+            }
 
             await RetrieveAllTargetsForMonitoring();
 
@@ -59,8 +62,11 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
         private async Task LogResult(MonitoringResult result)
         {
-            _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
-               result.EndTimeStamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
+            if (_logger.IsEnabled(LogLevel.Critical))
+            {
+                _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
+                   result.EndTimeStamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
+            }
 
             using var scope = _serviceProvider.CreateScope();
             var monitoringHistoryService = scope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
@@ -160,7 +166,10 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
             _ = Task.Run(() => MonitorLoopAsync(target, cts.Token), cts.Token);
 
-            _logger.LogInformation("Started monitoring {Name} every {Sec}s", target.Name, target.Interval.TotalSeconds);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Started monitoring {Name} every {Sec}s", target.Name, target.Interval.TotalSeconds);
+            }
         }
 
         private void StopMonitor(string name)
@@ -170,7 +179,10 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 cts.Cancel();
                 cts.Dispose();
                 _runningMonitors.Remove(name);
-                _logger.LogInformation("Stopped monitoring {Name}", name);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Stopped monitoring {Name}", name);
+                }
             }
         }
     }
