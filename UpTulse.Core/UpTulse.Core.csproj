@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Facet" Version="5.1.10" />
+    <PackageReference Include="Facet" Version="5.1.12" />
   </ItemGroup>
 
   <ItemGroup>

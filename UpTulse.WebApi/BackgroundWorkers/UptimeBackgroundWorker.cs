@@ -153,6 +153,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
                     var result = await PerformCheckAsync(target, token);
                     await AnalyzeResultsAndLog(result);
                 }
+
                 while (await timer.WaitForNextTickAsync(token));
             }
             catch (OperationCanceledException)
