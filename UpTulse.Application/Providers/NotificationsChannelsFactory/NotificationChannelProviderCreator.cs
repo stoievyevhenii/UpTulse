@@ -1,4 +1,5 @@
-﻿using UpTulse.Application.Providers.NotificationsFactory;
+﻿using UpTulse.Application.Models;
+using UpTulse.Application.Providers.NotificationsFactory;
 
 namespace UpTulse.Application.Providers.NotificationsChannelsFactory
 {
@@ -8,10 +9,10 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory
 
         public abstract INotificationChannelProvider CreateNotificationChannelsProvider();
 
-        public Task SendMessage(string message)
+        public Task SendMessage(NotificationContext context)
         {
             _notificationChannelsProvider ??= CreateNotificationChannelsProvider();
-            return _notificationChannelsProvider.SendNotification(message);
+            return _notificationChannelsProvider.SendNotification(context);
         }
     }
 }
