@@ -41,6 +41,7 @@ namespace UpTulse.Application
         private static void AddModelsValidators(this IServiceCollection services)
         {
             services.AddScoped<IValidator<MonitoringTargetRequest>, MonitoringTargetRequestValidator>();
+            services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
         }
 
         private static void AddServices(this IServiceCollection services)

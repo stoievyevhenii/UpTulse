@@ -59,8 +59,12 @@ namespace UpTulse.Application.Services.Impl
 
         public async Task<LoginResponse> LoginAsync(LoginRequest loginUserModel)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginUserModel.Username)
-                ?? throw new DbRecordNotFoundException("Username or password is incorrect");
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginUserModel.Username);
+
+            if (user is null)
+            {
+                return new();
+            }
 
             var signInResult = await _signInManager
                 .PasswordSignInAsync(user, loginUserModel.Password, false, false);
