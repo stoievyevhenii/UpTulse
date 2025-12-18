@@ -1,10 +1,11 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
+using UpTulse.Application.Environments;
 using UpTulse.Core.Exceptions;
 using UpTulse.DataAccess.Identity;
 
@@ -14,7 +15,7 @@ namespace UpTulse.Application.Helpers
     {
         public static string GenerateToken(ApplicationUser user, IConfiguration configuration)
         {
-            var secretKey = configuration.GetValue<string>("JwtConfiguration:SecretKey")
+            var secretKey = Environment.GetEnvironmentVariable(SecurityEnv.JWT_SECRET)
                 ?? throw new ConfigurationNotFoundException("SecretKey not found");
 
             var key = Encoding.ASCII.GetBytes(secretKey);
