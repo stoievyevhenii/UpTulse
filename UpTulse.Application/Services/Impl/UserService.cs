@@ -1,8 +1,7 @@
-﻿using System.Data.Entity;
-
-using FluentValidation;
+﻿using FluentValidation;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 using UpTulse.Application.Models;
 using UpTulse.Core.Exceptions;
@@ -134,6 +133,28 @@ namespace UpTulse.Application.Services.Impl
                 FullName = result.FullName,
                 Role = result.Role,
                 LockoutEnd = result.LockoutEnd
+            };
+        }
+
+        public async Task<UserResponse> RecoveryUserAsync(Guid guid)
+        {
+            var user = await _userManager.FindByIdAsync(guid.ToString())
+                ?? throw new BadRequestException("User does not exist anymore");
+
+            var recoveryUserTask = await _userManager.SetLockoutEndDateAsync(user, null);
+
+            if (!recoveryUserTask.Succeeded)
+            {
+                throw new BadRequestException("Failed to recover user");
+            }
+
+            return new UserResponse
+            {
+                Id = Guid.Parse(user.Id),
+                Username = user.UserName ?? string.Empty,
+                FullName = user.FullName,
+                Role = user.Role,
+                LockoutEnd = user.LockoutEnd
             };
         }
 

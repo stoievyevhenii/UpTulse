@@ -13,6 +13,9 @@ namespace UpTulse.DataAccess.Persistence
             var context = services.GetRequiredService<DatabaseContext>();
             await context.Database.MigrateAsync();
 
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            await DatabaseContextSeed.SeedRolesAsync(roleManager);
+
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             await DatabaseContextSeed.SeedUsersAsync(context, userManager);
         }

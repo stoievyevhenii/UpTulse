@@ -47,6 +47,8 @@ namespace UpTulse.Application
         private static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<IClaimService, ClaimService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMonitoringTargetService, MonitoringTargetService>();
             services.AddScoped<IMonitoringGroupService, MonitoringGroupService>();
             services.AddScoped<IMonitoringHistoryService, MonitoringHistoryService>();

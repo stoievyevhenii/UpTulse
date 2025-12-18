@@ -12,6 +12,8 @@ namespace UpTulse.Application.Services
 
         Task<UserResponse> GetUserAsync(Guid userId);
 
-        Task<UserResponse> UpdateAsync(Guid userId, UpdateUserRequest updatedUser);
+        Task<UserResponse> RecoveryUserAsync(Guid guid);
+
+        Task<UserResponse> UpdateAsync(Guid userId, UpdateUserRequest updateUserRequest);
     }
 }
