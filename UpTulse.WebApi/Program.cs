@@ -1,4 +1,5 @@
 using UpTulse.DataAccess.Persistence;
+using UpTulse.WebApi;
 using UpTulse.WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ builder
     .ConfigureBaseComponents()
     .ConfigureProjectLayers()
     .ConfigureSchedulers();
+
+builder.Services.AddJwtAuthViaBearer(builder.Configuration);
 
 var app = builder.Build();
 

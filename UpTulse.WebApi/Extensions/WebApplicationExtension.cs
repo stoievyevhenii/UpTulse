@@ -20,7 +20,13 @@ namespace UpTulse.WebApi.Extensions
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.MapScalarApiReference();
+                app.MapScalarApiReference(options =>
+                {
+                    options.Authentication = new ScalarAuthenticationOptions
+                    {
+                        PreferredSecuritySchemes = ["Bearer"]
+                    };
+                });
             }
 
             return app;

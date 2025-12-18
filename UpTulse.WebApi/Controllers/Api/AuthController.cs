@@ -22,12 +22,5 @@ namespace UpTulse.WebApi.Controllers.Api
         {
             return Ok(ApiResult<LoginResponse>.Success(await _authService.LoginAsync(loginUserModel)));
         }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Test()
-        {
-            return Ok(true);
-        }
     }
 }
