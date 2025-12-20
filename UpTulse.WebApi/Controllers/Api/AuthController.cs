@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using UpTulse.Application.Models;
 using UpTulse.Application.Services;
@@ -16,6 +17,7 @@ namespace UpTulse.WebApi.Controllers.Api
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> LoginAsync(LoginRequest loginUserModel)
         {
             return Ok(ApiResult<LoginResponse>.Success(await _authService.LoginAsync(loginUserModel)));
