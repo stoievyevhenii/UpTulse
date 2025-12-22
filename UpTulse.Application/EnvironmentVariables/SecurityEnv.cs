@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace UpTulse.Application.Environments
+namespace UpTulse.Application.EnvironmentVariables
 {
     public static class SecurityEnv
     {

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-using UpTulse.Application.Environments;
+using UpTulse.Application.EnvironmentVariables;
 using UpTulse.Application.Models;
 using UpTulse.Application.Providers.NotificationsFactory;
 

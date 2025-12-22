@@ -4,7 +4,7 @@ using System.Text;
 
 using Quartz;
 
-using UpTulse.Application.Environments;
+using UpTulse.Application.EnvironmentVariables;
 using UpTulse.Application.Services;
 
 namespace UpTulse.Application.Schedulers

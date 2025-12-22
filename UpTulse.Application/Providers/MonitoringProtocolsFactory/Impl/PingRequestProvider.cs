@@ -1,12 +1,21 @@
-﻿using UpTulse.Application.Models;
+﻿using System.Net.NetworkInformation;
+
+using UpTulse.Application.Models;
 
 namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Impl
 {
     public class PingRequestProvider : IMonitoringProtocolsProvider
     {
-        public Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
+        public async Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
         {
-            throw new NotImplementedException();
+            using var ping = new Ping();
+
+            var reply = await ping
+                .SendPingAsync(hostNameOrAddress: monitoringParameters.Address,
+                               timeout: monitoringParameters.Interval,
+                               cancellationToken: monitoringParameters.CancellationToken);
+
+            return reply.Status == IPStatus.Success;
         }
     }
 }

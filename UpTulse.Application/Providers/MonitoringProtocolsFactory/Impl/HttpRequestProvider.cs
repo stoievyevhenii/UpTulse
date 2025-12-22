@@ -4,9 +4,20 @@ namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Impl
 {
     public class HttpRequestProvider : IMonitoringProtocolsProvider
     {
-        public Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public HttpRequestProvider(IHttpClientFactory httpClientFactory)
         {
-            throw new NotImplementedException();
+            _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
+        {
+            using var client = _httpClientFactory.CreateClient();
+
+            client.Timeout = TimeSpan.FromSeconds(5);
+            var response = await client.GetAsync(monitoringParameters.Address, monitoringParameters.CancellationToken);
+            return response.IsSuccessStatusCode;
         }
     }
 }

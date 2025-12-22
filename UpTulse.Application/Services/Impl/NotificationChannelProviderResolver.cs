@@ -4,7 +4,7 @@ using UpTulse.Shared.Enums;
 
 namespace UpTulse.Application.Services.Impl
 {
-    public class NotificationChannelProviderAccessor : INotificationChannelProviderAccessor
+    public class NotificationChannelProviderResolver : INotificationChannelProviderResolver
     {
         public NotificationChannelProviderCreator GetProviderCreator(NotificationChannel channel)
         {
@@ -12,6 +12,7 @@ namespace UpTulse.Application.Services.Impl
             {
                 NotificationChannel.Email => new EmailChannelProviderCreator(),
                 NotificationChannel.None => new EmptyChannelProviderCreator(),
+                NotificationChannel.OneSignal => new OneSignalChannelProviderCreator(),
                 _ => throw new NotImplementedException()
             };
         }

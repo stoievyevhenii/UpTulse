@@ -3,7 +3,7 @@ using UpTulse.Shared.Enums;
 
 namespace UpTulse.Application.Services
 {
-    public interface INotificationChannelProviderAccessor
+    public interface INotificationChannelProviderResolver
     {
         NotificationChannelProviderCreator GetProviderCreator(NotificationChannel channel);
     }

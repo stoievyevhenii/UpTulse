@@ -130,7 +130,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
 
             var notificationChannelProviderService = notificationScope.ServiceProvider
-                .GetRequiredService<INotificationChannelProviderAccessor>();
+                .GetRequiredService<INotificationChannelProviderResolver>();
 
             var notificationProviderService = notificationChannelProviderService
                 .GetProviderCreator(monitoringTarget.NotificationChannel);
@@ -174,6 +174,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
             try
             {
+                // TODO: Move to factory
+
                 if (target.Protocol == MonitoringProtocol.HTTP)
                 {
                     using var client = _httpClientFactory.CreateClient();
