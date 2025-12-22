@@ -1,4 +1,8 @@
-﻿using UpTulse.Application.EnvironmentVariables;
+﻿using System.Text;
+
+using Newtonsoft.Json;
+
+using UpTulse.Application.EnvironmentVariables;
 using UpTulse.Application.Models;
 using UpTulse.Application.Providers.NotificationsFactory;
 
@@ -17,9 +21,33 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
             _oneSignalUrl = Environment.GetEnvironmentVariable(NotificationsEnv.ONESIGNAL_URL) ?? string.Empty;
         }
 
-        public Task<bool> SendNotification(NotificationContext context)
+        public async Task<bool> SendNotification(NotificationContext context)
         {
-            throw new NotImplementedException();
+            var payload = new PushNotificationRequest
+            {
+                AppId = _oneSignalAppId,
+                Contents = new Contents { En = context.Body },
+                Headings = new Headings { En = context.Subject },
+                Name = context.Subject,
+                Subtitle = new Subtitle { En = context.Body }
+            };
+
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+
+            using var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromMilliseconds(6000)
+            };
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, _oneSignalUrl)
+            {
+                Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json")
+            };
+
+            request.Headers.Add("Authorization", _oneSignalApiKey);
+            var response = await client.SendAsync(request);
+
+            return response.IsSuccessStatusCode;
         }
     }
 }
