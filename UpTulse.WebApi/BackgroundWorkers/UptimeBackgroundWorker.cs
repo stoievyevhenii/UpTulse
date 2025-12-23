@@ -14,7 +14,6 @@ namespace UpTulse.WebApi.BackgroundWorkers
 {
     public class UptimeBackgroundWorker : BackgroundService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<UptimeBackgroundWorker> _logger;
         private readonly IMonitoringTargetsManager _monitoringManager;
         private readonly List<MonitoringResult> _monitoringResults;
@@ -27,10 +26,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
             IMonitoringTargetsManager monitoringManager,
             ILogger<UptimeBackgroundWorker> logger,
             IServiceProvider serviceProvider,
-            INotificationSseManager notificationSseManager,
-            IHttpClientFactory httpClientFactory)
+            INotificationSseManager notificationSseManager)
         {
-            _httpClientFactory = httpClientFactory;
             _serviceProvider = serviceProvider;
             _logger = logger;
             _notificationSseManager = notificationSseManager;
