@@ -12,7 +12,7 @@ namespace UpTulse.Application.Providers.MonitoringProtocolsFactory
 
         public abstract IMonitoringProtocolsProvider CreateMonitoringProtocolProvider();
 
-        public Task PerformCheckAsync(MonitoringParameters monitoringParameters)
+        public Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
         {
             _monitoringProtocolsProvider ??= CreateMonitoringProtocolProvider();
             return _monitoringProtocolsProvider.PerformCheckAsync(monitoringParameters);

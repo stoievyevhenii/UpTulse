@@ -2,11 +2,11 @@
 
 namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Creators
 {
-    public class PingRequestProviderCreator : MonitoringProtocolsProviderCreator
+    public class PingProviderCreator : MonitoringProtocolsProviderCreator
     {
         public override IMonitoringProtocolsProvider CreateMonitoringProtocolProvider()
         {
-            return new PingRequestProvider();
+            return new PingProvider();
         }
     }
 }

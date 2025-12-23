@@ -2,18 +2,18 @@
 
 namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Creators
 {
-    public class HttpRequestProviderCreator : MonitoringProtocolsProviderCreator
+    public class HttpProviderCreator : MonitoringProtocolsProviderCreator
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public HttpRequestProviderCreator(IHttpClientFactory httpClientFactory)
+        public HttpProviderCreator(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
         public override IMonitoringProtocolsProvider CreateMonitoringProtocolProvider()
         {
-            return new HttpRequestProvider(_httpClientFactory);
+            return new HttpProvider(_httpClientFactory);
         }
     }
 }

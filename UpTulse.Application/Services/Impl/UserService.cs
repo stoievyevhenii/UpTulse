@@ -20,7 +20,7 @@ namespace UpTulse.Application.Services.Impl
         public UserService(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-           SignInManager<ApplicationUser> signInManager,
+            SignInManager<ApplicationUser> signInManager,
             IValidator<CreateUserRequest> createUserValidator)
         {
             _createUserValidator = createUserValidator;

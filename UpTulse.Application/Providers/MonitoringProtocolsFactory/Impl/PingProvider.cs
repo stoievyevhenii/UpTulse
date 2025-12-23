@@ -4,7 +4,7 @@ using UpTulse.Application.Models;
 
 namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Impl
 {
-    public class PingRequestProvider : IMonitoringProtocolsProvider
+    public class PingProvider : IMonitoringProtocolsProvider
     {
         public async Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
         {

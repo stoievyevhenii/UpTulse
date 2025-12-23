@@ -53,6 +53,7 @@ namespace UpTulse.Application
             services.AddScoped<IMonitoringGroupService, MonitoringGroupService>();
             services.AddScoped<IMonitoringHistoryService, MonitoringHistoryService>();
             services.AddScoped<INotificationChannelProviderResolver, NotificationChannelProviderResolver>();
+            services.AddScoped<IMonitoringProtocolResolver, MonitoringProtocolResolver>();
         }
 
         private static void AddSystemServices(this IServiceCollection services)

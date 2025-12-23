@@ -174,21 +174,16 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
             try
             {
-                // TODO: Move to factory
+                using var protocolResolverScope = _serviceProvider.CreateScope();
+                var protocolResolverService = protocolResolverScope.ServiceProvider.GetRequiredService<IMonitoringProtocolResolver>();
 
-                if (target.Protocol == MonitoringProtocol.HTTP)
+                var protocolResolver = protocolResolverService.GetProtocolProvider(target.Protocol);
+
+                isUp = await protocolResolver.PerformCheckAsync(new()
                 {
-                    using var client = _httpClientFactory.CreateClient();
-                    client.Timeout = TimeSpan.FromSeconds(5);
-                    var response = await client.GetAsync(target.Address, token);
-                    isUp = response.IsSuccessStatusCode;
-                }
-                else
-                {
-                    using var ping = new Ping();
-                    var reply = await ping.SendPingAsync(hostNameOrAddress: target.Address, timeout: TimeSpan.FromSeconds(5), cancellationToken: token);
-                    isUp = reply.Status == IPStatus.Success;
-                }
+                    Address = target.Address,
+                    CancellationToken = token
+                });
             }
             catch { isUp = false; }
 

@@ -7,11 +7,11 @@ using UpTulse.Application.Models;
 
 namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Impl
 {
-    public class HttpRequestProvider : IMonitoringProtocolsProvider
+    public class HttpProvider : IMonitoringProtocolsProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public HttpRequestProvider(IHttpClientFactory httpClientFactory)
+        public HttpProvider(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
