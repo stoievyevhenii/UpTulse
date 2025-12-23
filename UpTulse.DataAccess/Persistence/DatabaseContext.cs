@@ -32,8 +32,7 @@ namespace UpTulse.DataAccess.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        //entry.Entity.CreatedBy = _claimService.GetUserId();
-                        entry.Entity.CreatedBy = Guid.CreateVersion7().ToString();
+                        entry.Entity.CreatedBy = _claimService.GetUserId();
                         break;
                 }
             }

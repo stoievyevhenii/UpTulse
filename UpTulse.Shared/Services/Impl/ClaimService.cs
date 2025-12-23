@@ -20,7 +20,14 @@ namespace UpTulse.Shared.Services.Impl
 
         public string GetUserId()
         {
-            return GetClaim(ClaimTypes.NameIdentifier);
+            try
+            {
+                return GetClaim(ClaimTypes.NameIdentifier);
+            }
+            catch
+            {
+                return Guid.Empty.ToString();
+            }
         }
 
         public string GetUserRole()

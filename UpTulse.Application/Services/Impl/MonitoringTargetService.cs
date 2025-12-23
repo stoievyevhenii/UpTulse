@@ -59,7 +59,7 @@ namespace UpTulse.Application.Services.Impl
 
             var response = await _monitoringTargetRepository.AddAsync(newMonitoringTarget);
 
-            await _monitoringManagerService.AddTargetAsync(request);
+            await _monitoringManagerService.AddOrUpdateExistTargetAsync(request);
 
             return await ReturnAfterMap(response);
         }
@@ -106,16 +106,22 @@ namespace UpTulse.Application.Services.Impl
             oldRecord.Description = string.IsNullOrWhiteSpace(request.Description) ? oldRecord.Description : request.Description;
             oldRecord.Protocol = request.Protocol != null ? request.Protocol.Value : oldRecord.Protocol;
 
-            if (request.GroupId is Guid guid && await _monitoringGroupService.AnyAsync(guid))
+            if (
+                request.GroupId != Guid.Empty &&
+                request.GroupId != null &&
+                request.GroupId is Guid guid &&
+                await _monitoringGroupService.AnyAsync(guid))
             {
-                oldRecord.GroupId = request.GroupId != null && request.GroupId != Guid.Empty ? request.GroupId.Value : oldRecord.GroupId;
-            }
-            else
-            {
-                throw new DbRecordNotFoundException($"Monitoring group with ID {request.GroupId} not found");
+                oldRecord.GroupId = request.GroupId != oldRecord.GroupId ? request.GroupId.Value : oldRecord.GroupId;
             }
 
             var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);
+
+            var updatedTargetToRequestFacet = new MonitoringTargetRequest();
+            updatedTargetToRequestFacet.ApplyFacet(updatedRecord);
+
+            await _monitoringManagerService.AddOrUpdateExistTargetAsync(updatedTargetToRequestFacet);
+
             return await ReturnAfterMap(updatedRecord);
         }
 

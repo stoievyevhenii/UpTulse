@@ -9,5 +9,6 @@ namespace UpTulse.Application.Models
         public string Address { get; set; } = string.Empty;
         public CancellationToken CancellationToken { get; set; }
         public TimeSpan Interval { get; set; } = TimeSpan.FromSeconds(5);
+        public int? Port { get; set; }
     }
 }

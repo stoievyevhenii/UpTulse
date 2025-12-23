@@ -7,6 +7,8 @@ namespace UpTulse.DataAccess.Persistence
 {
     public static class DatabaseContextSeed
     {
+        private const string DefaultAdminUserName = "admin";
+
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             if (!await roleManager.RoleExistsAsync(roleName: UserRole.Admin))
@@ -22,13 +24,13 @@ namespace UpTulse.DataAccess.Persistence
 
         public static async Task SeedUsersAsync(DatabaseContext context, UserManager<ApplicationUser> userManager)
         {
-            var defaultAdminRecord = await userManager.FindByNameAsync("admin");
+            var defaultAdminRecord = await userManager.FindByNameAsync(DefaultAdminUserName);
 
             if (defaultAdminRecord is null)
             {
                 var user = new ApplicationUser
                 {
-                    UserName = "admin",
+                    UserName = DefaultAdminUserName,
                     Email = "admin@admin.com",
                     EmailConfirmed = true,
                     Role = UserRole.Admin,

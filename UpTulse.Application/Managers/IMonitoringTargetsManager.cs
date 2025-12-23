@@ -8,7 +8,7 @@ namespace UpTulse.Application.Managers
     {
         ChannelReader<MonitoringOperation> OperationReader { get; }
 
-        Task AddTargetAsync(MonitoringTargetRequest target);
+        Task AddOrUpdateExistTargetAsync(MonitoringTargetRequest target);
 
         IEnumerable<MonitoringTargetRequest> GetTargets();
 
