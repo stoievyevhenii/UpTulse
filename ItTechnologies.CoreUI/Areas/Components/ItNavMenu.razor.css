@@ -86,12 +86,12 @@
 @media (min-width: 641px) {
     .nav-scrollable {
         display: block;
-        height: calc(100vh - 3.5rem);
+        height: calc(100vh - var(--top-row-height));
         overflow-y: auto;
     }
 
     .top-row {
-        min-height: 3.5rem;
+        min-height: var(--top-row-height);
         border-bottom-color: var(--divider-color);
     }
 }

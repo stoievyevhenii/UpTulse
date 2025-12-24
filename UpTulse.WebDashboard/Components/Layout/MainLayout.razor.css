@@ -1,11 +1,15 @@
 .page {
     position: relative;
     display: flex;
+    height: 100vh;
     flex-direction: column;
 }
 
 main {
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 30vh;
 }
 
 .landscape-nav {
@@ -20,9 +24,11 @@ main {
     background-color: var(--bg);
     border-bottom: 1px solid #d6d5d5;
     justify-content: flex-end;
-    height: 3.5rem;
+    height: var(--top-row-height);
     display: flex;
     align-items: center;
+    position: sticky;
+    top: 0;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
@@ -39,6 +45,11 @@ main {
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+.top-row, article {
+    padding-left: var(--padding) !important;
+    padding-right: var(--padding) !important;
+}
 
 @media (max-width: 640.98px) {
     .top-row {
@@ -81,11 +92,6 @@ main {
             text-align: right;
             width: 0;
         }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
 }
 
 #blazor-error-ui {
