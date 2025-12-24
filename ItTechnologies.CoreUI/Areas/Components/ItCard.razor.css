@@ -3,4 +3,12 @@
     border: 1px solid #ebebeb;
     margin: var(--padding) 0;
     padding: var(--padding);
+    cursor: pointer;
+    border-radius: var(--border-radius);
 }
+
+    .wrapper:hover {
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        border-color: black;
+    }

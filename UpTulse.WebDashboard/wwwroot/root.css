@@ -5,7 +5,7 @@
     --animation-y-reversed: slide-in-y-reversed var(--transition-time) ease-out;
     --bg: #f3f3f3;
     --border-size: 3px;
-    --box-shadow: 0 4px 8px 0 #00000080;
+    --box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     --gap: 2px;
     --margin: 0.6rem;
     --max-width: 1024px;
@@ -19,10 +19,11 @@
     --unactive-color: #767676;
     --divider-color: #d6d5d5;
     --border-color: rgb(165, 165, 165);
-    --bg-for-backdrop: rgb(165, 165, 165, .5);
+    --bg-for-backdrop: rgb(243, 243, 243, .5);
     --backdrop: blur(5px);
     --top-row-height: 3.5rem;
     --border: 1px solid var(--divider-color);
+    --border-radius: 4px;
 }
 
 @keyframes slide-in-y {

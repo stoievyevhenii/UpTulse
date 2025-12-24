@@ -9,6 +9,7 @@
     width: calc(100% - var(--padding) * 4);
     align-items: center;
     justify-content: center;
+    border-radius: var(--border-radius);
     gap: var(--gap);
     backdrop-filter: var(--backdrop);
 }
@@ -19,6 +20,7 @@
     color: white;
     text-decoration: none;
     border: 1px solid transparent;
+    border-radius: var(--border-radius);
     height: var(--nav-link-size);
     display: flex;
     flex-direction: column;
