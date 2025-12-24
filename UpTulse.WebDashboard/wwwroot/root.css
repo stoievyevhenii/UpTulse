@@ -3,7 +3,7 @@
     --animation-x: slide-in-x var(--transition-time) ease-out;
     --animation-y: slide-in-y var(--transition-time) ease-out;
     --animation-y-reversed: slide-in-y-reversed var(--transition-time) ease-out;
-    --bg: #ebebeb;
+    --bg: #f3f3f3;
     --border-size: 3px;
     --box-shadow: 0 4px 8px 0 #00000080;
     --gap: 2px;
@@ -18,8 +18,9 @@
     --nav-link-size: 70px;
     --unactive-color: #767676;
     --divider-color: #d6d5d5;
+    --border-color: rgb(165, 165, 165);
     --bg-for-backdrop: rgb(165, 165, 165, .5);
-    --backdrop: blur(10px);
+    --backdrop: blur(5px);
     --top-row-height: 3.5rem;
 }
 
