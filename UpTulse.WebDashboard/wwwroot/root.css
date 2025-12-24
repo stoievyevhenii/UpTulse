@@ -17,6 +17,8 @@
     --nav-link-size: 70px;
     --unactive-color: #767676;
     --divider-color: #d6d5d5;
+    --bg-for-backdrop: #fffc;
+    --backdrop: blur(10px);
 }
 
 @keyframes slide-in-y {

@@ -2,9 +2,17 @@
 
 @inherits LayoutComponentBase
 
+@inject IJSRuntime JsRuntime
+
 <div class="page">
     <div class="sidebar">
-        <ItNavMenu NavMenuItems="@NavMenuItems" />
+        <div class="landscape-nav">
+            <ItNavMenu NavMenuItems="@NavMenuItems" />
+        </div>
+
+        <div class="mobile-nav">
+            <ItFloatNavMenu NavMenuItems="@NavMenuItems" />
+        </div>
     </div>
 
     <main>
@@ -24,10 +32,11 @@
 </div>
 
 @code {
+
     public List<NavMenuItem> NavMenuItems { get; set; } = new()
     {
         new NavMenuItem("Home", PageRoute.Home, typeof(ItSvgHome)),
         new NavMenuItem("Details", PageRoute.Details, typeof(ItSvgCardList)),
-        new NavMenuItem("Settings", PageRoute.Settings, typeof(ItSvgHome)),
+        new NavMenuItem("Settings", PageRoute.Settings, typeof(ItSvgSettings)),
     };
 }
