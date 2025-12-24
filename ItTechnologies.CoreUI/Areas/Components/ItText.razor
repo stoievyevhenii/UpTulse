@@ -1,0 +1,19 @@
+﻿@using ItTechnologies.CoreUI.Areas.Enums
+<div class="text @TextStyleClass">ItText</div>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public ItTextStyle Style { get; set; } = ItTextStyle.Default;
+
+    private string TextStyleClass => Style switch
+    {
+        ItTextStyle.Default => "it-text-default",
+        ItTextStyle.CardTitle => "it-text-card-title",
+        ItTextStyle.CardSubtitle => "it-text-card-subtitle",
+        ItTextStyle.PageTitle => "it-text-page-title",
+        _ => "it-text-default",
+    };
+}

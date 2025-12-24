@@ -11,14 +11,6 @@
     gap: var(--gap);
 }
 
-.nav-item:first-of-type {
-    padding-top: var(--padding);
-}
-
-.nav-item:last-of-type {
-    padding-bottom: var(--padding);
-}
-
 .nav-item ::deep .nav-link {
     background: none;
     position: relative;

@@ -1,0 +1,6 @@
+.wrapper {
+    background-color: white;
+    border: 1px solid #ebebeb;
+    margin: var(--padding) 0;
+    padding: var(--padding);
+}

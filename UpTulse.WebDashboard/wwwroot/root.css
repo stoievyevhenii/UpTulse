@@ -22,6 +22,7 @@
     --bg-for-backdrop: rgb(165, 165, 165, .5);
     --backdrop: blur(5px);
     --top-row-height: 3.5rem;
+    --border: 1px solid var(--divider-color);
 }
 
 @keyframes slide-in-y {
