@@ -1,15 +1,16 @@
-﻿@inherits LayoutComponentBase
+﻿@using UpTulse.WebDashboard.Const
+
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu />
+        <ItNavMenu NavMenuItems="@NavMenuItems" />
     </div>
 
     <main>
         <div class="top-row px-4">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
-
         <article class="content px-4">
             @Body
         </article>
@@ -21,3 +22,12 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    public List<NavMenuItem> NavMenuItems { get; set; } = new()
+    {
+        new NavMenuItem("Home", PageRoute.Home, typeof(ItSvgHome)),
+        new NavMenuItem("Details", PageRoute.Details, typeof(ItSvgCardList)),
+        new NavMenuItem("Settings", PageRoute.Settings, typeof(ItSvgHome)),
+    };
+}

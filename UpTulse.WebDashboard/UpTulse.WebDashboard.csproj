@@ -7,4 +7,8 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ItTechnologies.CoreUI\ItTechnologies.CoreUI.csproj" />
+  </ItemGroup>
+
 </Project>
