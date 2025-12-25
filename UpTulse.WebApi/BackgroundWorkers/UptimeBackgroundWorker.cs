@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using Microsoft.Extensions.Logging;
 
 using UpTulse.Application.Enums;
+using UpTulse.Application.EnvironmentVariables;
 using UpTulse.Application.Managers;
 using UpTulse.Application.Models;
 using UpTulse.Application.Services;
@@ -21,6 +22,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
         private readonly Dictionary<string, CancellationTokenSource> _runningMonitors;
         private readonly IServiceProvider _serviceProvider;
         private readonly List<Guid> _unavailableTargetsGuids;
+        private readonly int _utcOffset;
 
         public UptimeBackgroundWorker(
             IMonitoringTargetsManager monitoringManager,
@@ -35,6 +37,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
             _runningMonitors = [];
             _monitoringResults = [];
             _unavailableTargetsGuids = [];
+
+            _utcOffset = int.TryParse(Environment.GetEnvironmentVariable(SystemEnv.UTC_OFFSET), out var utcOffset) ? utcOffset : 0;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -132,10 +136,12 @@ namespace UpTulse.WebApi.BackgroundWorkers
             var notificationProviderService = notificationChannelProviderService
                 .GetProviderCreator(monitoringTarget.NotificationChannel);
 
+            var dateTimeWithOffset = result.EndTimeStamp.ToOffset(TimeSpan.FromHours(_utcOffset));
+
             await notificationProviderService.SendMessageAsync(new()
             {
                 Subject = isUp ? $"🟢 {monitoringTarget.Name} is UP" : $"🔴 {monitoringTarget.Name} is DOWN",
-                Body = DateTime.UtcNow.ToString("F"),
+                Body = dateTimeWithOffset.ToString("F"),
             });
         }
 

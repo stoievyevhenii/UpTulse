@@ -120,6 +120,7 @@ namespace UpTulse.Application.Services.Impl
             var updatedTargetToRequestFacet = new MonitoringTargetRequest();
             updatedTargetToRequestFacet.ApplyFacet(updatedRecord);
 
+            await _monitoringManagerService.RemoveTargetAsync(oldRecord.Name);
             await _monitoringManagerService.AddOrUpdateExistTargetAsync(updatedTargetToRequestFacet);
 
             return await ReturnAfterMap(updatedRecord);
