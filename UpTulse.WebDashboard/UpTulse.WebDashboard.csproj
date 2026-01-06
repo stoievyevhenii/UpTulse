@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ItTechnologies.CoreUI\ItTechnologies.CoreUI.csproj" />
+    <ProjectReference Include="..\UpTulse.Application\UpTulse.Application.csproj" />
   </ItemGroup>
 
 </Project>
