@@ -2,15 +2,19 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS base
-USER $APP_UID
+USER root
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
+
+# Install additional utility into container
+RUN apt-get update -y
+RUN apt-get install -y iputils-ping
+
 WORKDIR /src
 COPY ["UpTulse.WebApi/UpTulse.WebApi.csproj", "UpTulse.WebApi/"]
 COPY ["UpTulse.Application/UpTulse.Application.csproj", "UpTulse.Application/"]
