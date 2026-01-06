@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /UpTulse.WebApi/Controllers/Api/DebugsController.cs
 /UpTulse.WebApi/Properties/launchSettings.json
+/UpTulse.WebDashboard/Properties/launchSettings.json
