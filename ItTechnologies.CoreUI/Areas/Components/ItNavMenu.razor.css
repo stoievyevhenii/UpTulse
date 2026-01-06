@@ -1,0 +1,90 @@
+.top-row {
+    min-height: 0;
+    background-color: var(--bg);
+    border-bottom: 1px solid transparent;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: var(--gap);
+}
+
+.nav-item ::deep .nav-link {
+    background: none;
+    position: relative;
+    color: white;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    height: var(--nav-link-size);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: var(--nav-link-size);
+}
+
+    .nav-item ::deep .nav-link .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 2;
+    }
+
+.nav-item > .nav-link > .icon ::deep svg {
+    fill: var(--unactive-color);
+    width: 24px;
+}
+
+.nav-item > .nav-link > .text {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    font-size: 0.85rem;
+    flex: 1;
+    color: var(--unactive-color);
+}
+
+.nav-item ::deep .nav-link:hover .text {
+    color: var(--accent);
+}
+
+.nav-item ::deep .nav-link:hover .icon svg {
+    fill: var(--accent);
+}
+
+.nav-scrollable {
+    display: none;
+    padding: var(--padding);
+}
+
+.navbar-toggler:checked ~ .nav-scrollable {
+    display: block;
+}
+
+.nav-item ::deep a.active {
+    background-color: black;
+}
+
+    .nav-item ::deep a.active .text {
+        color: white;
+    }
+
+    .nav-item ::deep a.active .icon svg {
+        fill: white;
+    }
+
+@media (min-width: 641px) {
+    .nav-scrollable {
+        display: block;
+        height: calc(100vh - var(--top-row-height));
+        overflow-y: auto;
+    }
+
+    .top-row {
+        min-height: var(--top-row-height);
+        border-bottom-color: var(--divider-color);
+    }
+}

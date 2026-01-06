@@ -1,0 +1,12 @@
+﻿@page "/"
+@using ItTechnologies.CoreUI.Areas.Enums
+
+<PageTitle>Home</PageTitle>
+
+@for (int i = 0; i < 100; i++)
+{
+    <ItCard>
+        <ItText Style="ItTextStyle.CardTitle" Text="@("Card #" + i)" />
+        <ItText Style="ItTextStyle.CardSubtitle" Text="@("This is a subtitle for card number - " + i)" />
+    </ItCard>
+}

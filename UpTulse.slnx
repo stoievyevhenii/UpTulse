@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="ItTechnologies.CoreUI/ItTechnologies.CoreUI.csproj" Id="ab3c21cb-f79e-4f1a-9deb-17ecee128798" />
+  <Project Path="UpTulse.Application/UpTulse.Application.csproj" />
+  <Project Path="UpTulse.Core/UpTulse.Core.csproj" />
+  <Project Path="UpTulse.DataAccess/UpTulse.DataAccess.csproj" />
+  <Project Path="UpTulse.Shared/UpTulse.Shared.csproj" />
+  <Project Path="UpTulse.WebApi/UpTulse.WebApi.csproj" />
+  <Project Path="UpTulse.WebDashboard/UpTulse.WebDashboard.csproj" />
+</Solution>

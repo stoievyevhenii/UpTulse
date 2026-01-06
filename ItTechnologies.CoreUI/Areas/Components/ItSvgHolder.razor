@@ -1,0 +1,22 @@
+﻿<svg width="@Width" height="@Height" fill="@Fill" viewBox="@ViewBox">
+    @ChildContent
+</svg>
+
+@code
+{
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Width { get; set; } = "32px";
+
+    [Parameter]
+    public string Height { get; set; } = "32px";
+
+    [Parameter]
+    public string Fill { get; set; } = "#000000";
+
+    [Parameter]
+    public string ViewBox { get; set; } = "0 0 32 32";
+
+}

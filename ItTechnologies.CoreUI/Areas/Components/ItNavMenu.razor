@@ -1,0 +1,28 @@
+﻿@using ItTechnologies.CoreUI.Areas.Icons.Svg
+@using ItTechnologies.CoreUI.Models
+@using Microsoft.AspNetCore.Components.Routing
+<div class="top-row"></div>
+
+<div class="nav-scrollable">
+    <nav class="wrapper">
+        @foreach (var navItem in NavMenuItems)
+        {
+            <div class="nav-item">
+                <NavLink class="nav-link" href="@navItem.Href" Match="@(navItem.Href == "" ? NavLinkMatch.All : NavLinkMatch.Prefix)">
+                    <div class="icon">
+                        <ItSvgHolder>
+                            @navItem.Icon
+                        </ItSvgHolder>
+                    </div>
+                    <div class="text">@navItem.Text</div>
+                </NavLink>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+
+    [Parameter]
+    public List<NavMenuItem> NavMenuItems { get; set; } = new();
+}

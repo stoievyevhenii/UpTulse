@@ -1,0 +1,88 @@
+.wrapper {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    flex-direction: row;
+    background: var(--bg-for-backdrop);
+    margin: var(--padding);
+    padding: var(--padding);
+    width: calc(100% - var(--padding) * 4);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius);
+    gap: var(--gap);
+    backdrop-filter: var(--backdrop);
+}
+
+.nav-item ::deep .nav-link {
+    background: none;
+    position: relative;
+    color: white;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    height: var(--nav-link-size);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: var(--nav-link-size);
+}
+
+    .nav-item ::deep .nav-link .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 2;
+    }
+
+.nav-item > .nav-link > .icon ::deep svg {
+    fill: var(--unactive-color);
+    width: 24px;
+}
+
+.nav-item > .nav-link > .text {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    font-size: 0.85rem;
+    flex: 1;
+    color: var(--unactive-color);
+}
+
+.nav-item ::deep .nav-link:hover .text {
+    color: var(--accent);
+}
+
+.nav-item ::deep .nav-link:hover .icon svg {
+    fill: var(--accent);
+}
+
+.nav-scrollable {
+    display: none;
+    padding: var(--padding);
+}
+
+.navbar-toggler:checked ~ .nav-scrollable {
+    display: block;
+}
+
+.nav-item ::deep a.active {
+    background-color: black;
+}
+
+    .nav-item ::deep a.active .text {
+        color: white;
+    }
+
+    .nav-item ::deep a.active .icon svg {
+        fill: white;
+    }
+
+@media (min-width: 641px) {
+    .nav-scrollable {
+        display: block;
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}

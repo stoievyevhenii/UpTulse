@@ -1,0 +1,79 @@
+@font-face {
+    font-family: 'urbanist';
+    src: url('fonts/urbanist.ttf') format('truetype');
+}
+
+* {
+    font-family: 'urbanist', sans-serif;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+    padding: 0;
+    margin: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    background-color: var(--bg);
+}
+
+.app-splash {
+    background-color: var(--bg);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.app-wrapper {
+    animation: var(--animation-y);
+}
+
+.app-icon {
+    position: relative;
+    height: 10rem;
+    width: 10rem;
+    z-index: 1;
+    border-radius: 100%;
+    padding: 10px;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    left: 0;
+    right: 0;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg);
+}
+
+.no-underline a {
+    text-decoration: none !important;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
+}
+
+.status-bar-safe-area {
+    display: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .status-bar-safe-area {
+        display: flex;
+        position: sticky;
+        height: var(--safe-top);
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        z-index: 1;
+    }
+}
