@@ -30,7 +30,7 @@ namespace UpTulse.WebApi.Extensions
         public static WebApplicationBuilder ConfigureProjectLayers(this WebApplicationBuilder builder)
         {
             builder.Services
-                .AddDataAccessLayer(builder.Configuration)
+                .AddDataAccessLayer()
                 .AddApplicationLayer();
 
             return builder;

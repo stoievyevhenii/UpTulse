@@ -106,6 +106,11 @@ namespace UpTulse.Application.Services.Impl
             oldRecord.Description = string.IsNullOrWhiteSpace(request.Description) ? oldRecord.Description : request.Description;
             oldRecord.Protocol = request.Protocol != null ? request.Protocol.Value : oldRecord.Protocol;
 
+            if (request.Interval is { } interval && interval > TimeSpan.FromSeconds(2) && interval != oldRecord.Interval)
+            {
+                oldRecord.Interval = interval;
+            }
+
             if (
                 request.GroupId != Guid.Empty &&
                 request.GroupId != null &&

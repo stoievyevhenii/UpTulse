@@ -1,16 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Threading;
-
-using Microsoft.Extensions.Logging;
 
 using UpTulse.Application.Enums;
-using UpTulse.Application.EnvironmentVariables;
 using UpTulse.Application.Managers;
 using UpTulse.Application.Models;
 using UpTulse.Application.Services;
-using UpTulse.Shared.Enums;
+using UpTulse.DataAccess.EnvironmentVariables;
 
 namespace UpTulse.WebApi.BackgroundWorkers
 {

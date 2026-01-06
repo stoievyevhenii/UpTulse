@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using UpTulse.Core.Exceptions;
 using UpTulse.DataAccess.EnvironmentVariables;
 using UpTulse.DataAccess.Identity;
 using UpTulse.DataAccess.Persistence;
@@ -24,8 +25,11 @@ namespace UpTulse.DataAccess
 
         private static void AddDatabase(this IServiceCollection services)
         {
+            var connectionString = Environment.GetEnvironmentVariable(SystemEnv.CONNECTION_STRING)
+                ?? throw new EnvironmentVariableNotFoundException(SystemEnv.CONNECTION_STRING);
+
             services.AddDbContext<DatabaseContext>(options =>
-                            options.UseNpgsql(SystemEnv.CONNECTION_STRING,
+                            options.UseNpgsql(connectionString,
                                 opt =>
                                 {
                                     opt.MigrationsAssembly(typeof(DatabaseContext).Assembly.FullName);

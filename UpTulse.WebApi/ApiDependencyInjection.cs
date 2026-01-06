@@ -3,8 +3,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-using UpTulse.Application.EnvironmentVariables;
 using UpTulse.Core.Exceptions;
+using UpTulse.DataAccess.EnvironmentVariables;
 
 namespace UpTulse.WebApi
 {
