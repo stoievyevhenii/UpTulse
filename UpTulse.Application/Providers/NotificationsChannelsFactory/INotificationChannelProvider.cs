@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using UpTulse.Application.Models;
+﻿using UpTulse.Application.Models;
 
 namespace UpTulse.Application.Providers.NotificationsFactory
 {

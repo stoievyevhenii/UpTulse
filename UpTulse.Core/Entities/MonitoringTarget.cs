@@ -17,11 +17,14 @@ namespace UpTulse.Core.Entities
 
         public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(1);
 
+        public bool IsAvailabilityCritical { get; set; } = false;
+        public bool IsUnavailabilityCritical { get; set; } = false;
+
         [Required]
         public string Name { get; set; } = default!;
 
         public NotificationChannel NotificationChannel { get; set; } = NotificationChannel.None;
-
+        public bool Paused { get; set; } = false;
         public MonitoringProtocol Protocol { get; set; } = MonitoringProtocol.Ping;
     }
 }

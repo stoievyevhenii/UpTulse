@@ -2,8 +2,9 @@
 {
     public static class NotificationsEnv
     {
-        public const string AndroidChannelId = "ANDROID_CHANNEL_ID";
-        public const string IosCategory = "IOS_CATEGORY";
+        public const string ANDROID_CHANNEL_ID = "ANDROID_CHANNEL_ID";
+        public const string ANDROID_CRITICAL_CHANNEL_ID = "ANDROID_CRITICAL_CHANNEL_ID";
+        public const string IOS_CATEGORY = "IOS_CATEGORY";
         public const string ONESIGNAL_API_KEY = "ONESIGNAL_API_KEY";
         public const string ONESIGNAL_APP_ID = "ONESIGNAL_APP_ID";
         public const string ONESIGNAL_URL = "ONESIGNAL_URL";

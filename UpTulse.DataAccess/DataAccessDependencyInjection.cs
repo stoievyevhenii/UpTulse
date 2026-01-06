@@ -25,8 +25,7 @@ namespace UpTulse.DataAccess
 
         private static void AddDatabase(this IServiceCollection services)
         {
-            var connectionString = Environment.GetEnvironmentVariable(SystemEnv.CONNECTION_STRING)
-                ?? throw new EnvironmentVariableNotFoundException(SystemEnv.CONNECTION_STRING);
+            var connectionString = Environment.GetEnvironmentVariable(SystemEnv.CONNECTION_STRING) ?? string.Empty;
 
             services.AddDbContext<DatabaseContext>(options =>
                             options.UseNpgsql(connectionString,

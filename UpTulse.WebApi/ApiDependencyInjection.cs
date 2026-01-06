@@ -14,7 +14,7 @@ namespace UpTulse.WebApi
         {
             var secretKey = Environment.GetEnvironmentVariable(SecurityEnv.JWT_SECRET);
 
-            var key = Encoding.ASCII.GetBytes(secretKey ?? throw new ConfigurationNotFoundException("Add key to ENV BALBES!"));
+            var key = Encoding.ASCII.GetBytes(secretKey ?? "Y5srr16jA0G6bp74");
 
             services.AddAuthentication(options =>
             {

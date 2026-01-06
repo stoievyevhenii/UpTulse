@@ -153,6 +153,9 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 Subject = isUp ? $"🟢 {monitoringTarget.Name} is UP" : $"🔴 {monitoringTarget.Name} is DOWN",
                 Body = dateTimeWithOffset.ToString("F"),
+                IsUp = isUp,
+                IsAvailabilityCritical = monitoringTarget.IsAvailabilityCritical,
+                IsUnavailabilityCritical = monitoringTarget.IsUnavailabilityCritical
             });
         }
 
