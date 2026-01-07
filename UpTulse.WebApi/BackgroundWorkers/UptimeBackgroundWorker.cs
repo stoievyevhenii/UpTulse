@@ -38,6 +38,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await RetrieveAllTargetsForMonitoring();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -46,8 +48,6 @@ namespace UpTulse.WebApi.BackgroundWorkers
                     {
                         _logger.LogInformation("Reactive Uptime Worker Started.");
                     }
-
-                    await RetrieveAllTargetsForMonitoring();
 
                     await foreach (var op in _monitoringManager.OperationReader.ReadAllAsync(stoppingToken))
                     {
@@ -67,17 +67,14 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 {
                     _logger.LogError(ex, "Reactive Uptime Worker error.");
                 }
+
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
         }
 
         private async Task AnalyzeResultsAndLog(MonitoringResult result)
         {
-            if (_logger.IsEnabled(LogLevel.Critical))
-            {
-                _logger.LogCritical("[{Time}] {Name}: {Status} ({Ms}ms)",
-                   result.EndTimeStamp.ToString(), result.Name, result.IsUp ? "UP" : "DOWN", result.ResponseTimeMs);
-            }
+            LogInfo(result);
 
             using var monitoringScope = _serviceProvider.CreateScope();
             var monitoringHistoryService = monitoringScope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
@@ -98,8 +95,8 @@ namespace UpTulse.WebApi.BackgroundWorkers
             if (_monitoringResults.Any(r => r.TargetId == result.TargetId))
             {
                 searchebleRecords = [.. _monitoringResults
-                 .Where(r => r.TargetId == result.TargetId)
-                 .OrderBy(r => r.StartTimeStamp)];
+                    .Where(r => r.TargetId == result.TargetId)
+                    .OrderBy(r => r.StartTimeStamp)];
             }
 
             if (searchebleRecords.Count < 3)
@@ -124,6 +121,20 @@ namespace UpTulse.WebApi.BackgroundWorkers
 
                 _monitoringResults.RemoveAll(r => r.TargetId == result.TargetId);
             }
+        }
+
+        private void LogInfo(MonitoringResult result)
+        {
+            Console.WriteLine($"-TARGET-------------------------------------------------------------------");
+            Console.WriteLine($"--------{result.Name}: {result.IsUp}--------------------------------------");
+            Console.WriteLine($"--------------------------------------------------------------------------");
+
+            Console.WriteLine($"-MONITORING LIST----------------------------------------------------------");
+            foreach (var target in _runningMonitors)
+            {
+                Console.WriteLine($"----{target.Key}");
+            }
+            Console.WriteLine($"--------------------------------------------------------------------------");
         }
 
         private async Task MonitoringTargetStateIsChanged(MonitoringResult result, bool isUp)
@@ -159,7 +170,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             });
         }
 
-        private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)
+        private async Task MonitorLoopAsync(MonitoringTargetRequest target)
         {
             using var timer = new PeriodicTimer(target.Interval);
 
@@ -167,11 +178,11 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 do
                 {
-                    var result = await PerformCheckAsync(target, token);
+                    var result = await PerformCheckAsync(target);
                     await AnalyzeResultsAndLog(result);
                 }
 
-                while (await timer.WaitForNextTickAsync(token));
+                while (await timer.WaitForNextTickAsync());
             }
             catch (OperationCanceledException)
             {
@@ -183,7 +194,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
         }
 
-        private async Task<MonitoringResult> PerformCheckAsync(MonitoringTargetRequest target, CancellationToken token)
+        private async Task<MonitoringResult> PerformCheckAsync(MonitoringTargetRequest target)
         {
             var sw = Stopwatch.StartNew();
             bool isUp = false;
@@ -199,7 +210,6 @@ namespace UpTulse.WebApi.BackgroundWorkers
                 isUp = await protocolResolver.PerformCheckAsync(new()
                 {
                     Address = target.Address,
-                    CancellationToken = token
                 });
             }
             catch { isUp = false; }
@@ -238,7 +248,7 @@ namespace UpTulse.WebApi.BackgroundWorkers
             var cts = new CancellationTokenSource();
             _runningMonitors[target.Name] = cts;
 
-            _ = Task.Run(() => MonitorLoopAsync(target, cts.Token), cts.Token);
+            _ = Task.Run(() => MonitorLoopAsync(target));
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -252,7 +262,9 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 cts.Cancel();
                 cts.Dispose();
+
                 _runningMonitors.Remove(name);
+
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Stopped monitoring {Name}", name);

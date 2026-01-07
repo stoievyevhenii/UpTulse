@@ -18,11 +18,18 @@ namespace UpTulse.Application.Providers.MonitoringProtocolsFactory.Impl
 
         public async Task<bool> PerformCheckAsync(MonitoringParameters monitoringParameters)
         {
-            using var client = _httpClientFactory.CreateClient();
+            try
+            {
+                using var client = _httpClientFactory.CreateClient();
 
-            client.Timeout = TimeSpan.FromSeconds(5);
-            var response = await client.GetAsync(monitoringParameters.Address, monitoringParameters.CancellationToken);
-            return response.IsSuccessStatusCode;
+                client.Timeout = TimeSpan.FromSeconds(5);
+                var response = await client.GetAsync(monitoringParameters.Address, monitoringParameters.CancellationToken);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
