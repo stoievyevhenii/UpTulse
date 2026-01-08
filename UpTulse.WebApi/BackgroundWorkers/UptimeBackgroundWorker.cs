@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 
 using UpTulse.Application.Enums;
 using UpTulse.Application.Managers;
@@ -13,8 +14,9 @@ namespace UpTulse.WebApi.BackgroundWorkers
         private readonly ILogger<UptimeBackgroundWorker> _logger;
         private readonly IMonitoringTargetsManager _monitoringManager;
         private readonly List<MonitoringResult> _monitoringResults;
+        private readonly Dictionary<string, string> _monitoringTotalResult;
         private readonly INotificationSseManager _notificationSseManager;
-        private readonly Dictionary<string, CancellationTokenSource> _runningMonitors;
+        private readonly ConcurrentDictionary<string, CancellationTokenSource> _runningMonitors;
         private readonly IServiceProvider _serviceProvider;
         private readonly List<Guid> _unavailableTargetsGuids;
         private readonly int _utcOffset;
@@ -29,10 +31,10 @@ namespace UpTulse.WebApi.BackgroundWorkers
             _logger = logger;
             _notificationSseManager = notificationSseManager;
             _monitoringManager = monitoringManager;
-            _runningMonitors = [];
+            _monitoringTotalResult = [];
             _monitoringResults = [];
             _unavailableTargetsGuids = [];
-
+            _runningMonitors = new ConcurrentDictionary<string, CancellationTokenSource>();
             _utcOffset = int.TryParse(Environment.GetEnvironmentVariable(SystemEnv.UTC_OFFSET), out var utcOffset) ? utcOffset : 0;
         }
 
@@ -40,137 +42,102 @@ namespace UpTulse.WebApi.BackgroundWorkers
         {
             await RetrieveAllTargetsForMonitoring();
 
-            while (!stoppingToken.IsCancellationRequested)
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                try
+                _logger.LogInformation("Reactive Uptime Worker Started.");
+            }
+
+            try
+            {
+                await foreach (var op in _monitoringManager.OperationReader.ReadAllAsync(stoppingToken))
                 {
-                    if (_logger.IsEnabled(LogLevel.Information))
+                    switch (op.Type)
                     {
-                        _logger.LogInformation("Reactive Uptime Worker Started.");
-                    }
+                        case OperationType.Add:
+                            StartMonitor(op.Target);
+                            break;
 
-                    await foreach (var op in _monitoringManager.OperationReader.ReadAllAsync(stoppingToken))
-                    {
-                        switch (op.Type)
-                        {
-                            case OperationType.Add:
-                                StartMonitor(op.Target);
-                                break;
-
-                            case OperationType.Remove:
-                                StopMonitor(op.Target.Name);
-                                break;
-                        }
+                        case OperationType.Remove:
+                            StopMonitor(op.Target.Name);
+                            break;
                     }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Reactive Uptime Worker error.");
-                }
-
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
-        }
-
-        private async Task AnalyzeResultsAndLog(MonitoringResult result)
-        {
-            LogInfo(result);
-
-            using var monitoringScope = _serviceProvider.CreateScope();
-            var monitoringHistoryService = monitoringScope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
-
-            await monitoringHistoryService.AddNewRecord(new()
+            catch (OperationCanceledException ex)
             {
-                IsUp = result.IsUp,
-                MonitoringTargetId = result.TargetId,
-                StartTimeStamp = result.StartTimeStamp,
-                EndTimeStamp = result.EndTimeStamp,
-                ResponseTimeInMs = result.ResponseTimeMs,
-            });
-
-            await _notificationSseManager.BroadcastAsync(result);
-
-            var searchebleRecords = new List<MonitoringResult>();
-
-            if (_monitoringResults.Any(r => r.TargetId == result.TargetId))
+                _logger.LogCritical(ex, "UptimeWorker critical error");
+            }
+            catch (Exception ex)
             {
-                searchebleRecords = [.. _monitoringResults
-                    .Where(r => r.TargetId == result.TargetId)
-                    .OrderBy(r => r.StartTimeStamp)];
+                _logger.LogError(ex, "Reactive Uptime Worker encountered a fatal error reading operations.");
             }
 
-            if (searchebleRecords.Count < 3)
-            {
-                _monitoringResults.Add(result);
-            }
-            else
-            {
-                var allDown = searchebleRecords.All(r => !r.IsUp);
-
-                if (!allDown && _unavailableTargetsGuids.Contains(result.TargetId))
-                {
-                    _unavailableTargetsGuids.Remove(result.TargetId);
-                    await MonitoringTargetStateIsChanged(result, true);
-                }
-
-                if (allDown && !_unavailableTargetsGuids.Contains(result.TargetId))
-                {
-                    _unavailableTargetsGuids.Add(result.TargetId);
-                    await MonitoringTargetStateIsChanged(result, false);
-                }
-
-                _monitoringResults.RemoveAll(r => r.TargetId == result.TargetId);
-            }
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 
         private void LogInfo(MonitoringResult result)
         {
-            Console.WriteLine($"-TARGET-------------------------------------------------------------------");
-            Console.WriteLine($"--------{result.Name}: {result.IsUp}--------------------------------------");
-            Console.WriteLine($"--------------------------------------------------------------------------");
-
-            Console.WriteLine($"-MONITORING LIST----------------------------------------------------------");
-            foreach (var target in _runningMonitors)
+            if (_monitoringTotalResult.Count < _runningMonitors.Count)
             {
-                Console.WriteLine($"----{target.Key}");
+                _monitoringTotalResult.TryAdd(result.Name, result.IsUp ? "UP" : "DOWN");
             }
-            Console.WriteLine($"--------------------------------------------------------------------------");
+            else
+            {
+                _monitoringTotalResult[result.Name] = result.IsUp ? "UP" : "DOWN";
+            }
+
+            if (_monitoringTotalResult.Count == _runningMonitors.Count)
+            {
+                Console.WriteLine($"\n-- Results -----------------------------------------------------------------");
+                foreach (var kvp in _monitoringTotalResult)
+                {
+                    Console.WriteLine($"-- {kvp.Key}: ({kvp.Value}) TIMESTAMP: {DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(_utcOffset))}");
+                }
+                Console.WriteLine($"\n");
+
+                _monitoringTotalResult.Clear();
+            }
         }
 
         private async Task MonitoringTargetStateIsChanged(MonitoringResult result, bool isUp)
         {
-            using var notificationScope = _serviceProvider.CreateScope();
-
-            var monitoringTargetsService = notificationScope.ServiceProvider
-                .GetRequiredService<IMonitoringTargetService>();
-
-            var monitoringTarget = await monitoringTargetsService.GetByIdAsync(result.TargetId);
-
-            if (monitoringTarget == null)
+            try
             {
-                _logger.LogWarning("Monitoring target not found: {TargetId}", result.TargetId);
-                return;
+                using var notificationScope = _serviceProvider.CreateScope();
+                var monitoringTargetsService = notificationScope.ServiceProvider.GetRequiredService<IMonitoringTargetService>();
+
+                var monitoringTarget = await monitoringTargetsService.GetByIdAsync(result.TargetId);
+
+                if (monitoringTarget == null)
+                {
+                    _logger.LogWarning("Monitoring target not found: {TargetId}", result.TargetId);
+                    return;
+                }
+
+                var notificationChannelProviderService = notificationScope.ServiceProvider
+                    .GetRequiredService<INotificationChannelProviderResolver>();
+
+                var notificationProviderService = notificationChannelProviderService
+                    .GetProviderCreator(monitoringTarget.NotificationChannel);
+
+                var dateTimeWithOffset = result.EndTimeStamp.ToOffset(TimeSpan.FromHours(_utcOffset));
+
+                await notificationProviderService.SendMessageAsync(new()
+                {
+                    Subject = isUp ? $"🟢 {monitoringTarget.Name} is UP" : $"🔴 {monitoringTarget.Name} is DOWN",
+                    Body = dateTimeWithOffset.ToString("F"),
+                    IsUp = isUp,
+                    IsAvailabilityCritical = monitoringTarget.IsAvailabilityCritical,
+                    IsUnavailabilityCritical = monitoringTarget.IsUnavailabilityCritical
+                });
             }
-
-            var notificationChannelProviderService = notificationScope.ServiceProvider
-                .GetRequiredService<INotificationChannelProviderResolver>();
-
-            var notificationProviderService = notificationChannelProviderService
-                .GetProviderCreator(monitoringTarget.NotificationChannel);
-
-            var dateTimeWithOffset = result.EndTimeStamp.ToOffset(TimeSpan.FromHours(_utcOffset));
-
-            await notificationProviderService.SendMessageAsync(new()
+            catch (Exception ex)
             {
-                Subject = isUp ? $"🟢 {monitoringTarget.Name} is UP" : $"🔴 {monitoringTarget.Name} is DOWN",
-                Body = dateTimeWithOffset.ToString("F"),
-                IsUp = isUp,
-                IsAvailabilityCritical = monitoringTarget.IsAvailabilityCritical,
-                IsUnavailabilityCritical = monitoringTarget.IsUnavailabilityCritical
-            });
+                _logger.LogError(ex, "Failed to send notification for {Name}", result.Name);
+            }
         }
 
-        private async Task MonitorLoopAsync(MonitoringTargetRequest target)
+        private async Task MonitorLoopAsync(MonitoringTargetRequest target, CancellationToken token)
         {
             using var timer = new PeriodicTimer(target.Interval);
 
@@ -178,11 +145,11 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 do
                 {
-                    var result = await PerformCheckAsync(target);
-                    await AnalyzeResultsAndLog(result);
+                    var result = await PerformCheckAsync(target, token);
+                    await SaveAndBroadcastResult(result);
                 }
 
-                while (await timer.WaitForNextTickAsync());
+                while (await timer.WaitForNextTickAsync(token));
             }
             catch (OperationCanceledException)
             {
@@ -194,36 +161,46 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
         }
 
-        private async Task<MonitoringResult> PerformCheckAsync(MonitoringTargetRequest target)
+        private async Task<MonitoringResult> PerformCheckAsync(MonitoringTargetRequest target, CancellationToken token)
         {
-            var sw = Stopwatch.StartNew();
+            long elapsedMs = 0;
             bool isUp = false;
             var startTime = DateTimeOffset.UtcNow;
 
+            // Optimization: avoid allocations of Stopwatch class if possible, or use struct-based ValueStopwatch
+            // Standard Stopwatch is fine here, but we ensure precise counting.
+            var sw = Stopwatch.StartNew();
+
             try
             {
+                // To further optimize, if IProtocolProvider implementations are thread-safe and
+                // stateless, they should be cached or resolved fewer times. Assuming they might be
+                // Scoped (e.g. HttpClient per request).
                 using var protocolResolverScope = _serviceProvider.CreateScope();
                 var protocolResolverService = protocolResolverScope.ServiceProvider.GetRequiredService<IMonitoringProtocolResolver>();
-
                 var protocolResolver = protocolResolverService.GetProtocolProvider(target.Protocol);
 
                 isUp = await protocolResolver.PerformCheckAsync(new()
                 {
                     Address = target.Address,
+                    CancellationToken = token
                 });
             }
-            catch { isUp = false; }
+            catch
+            {
+                isUp = false;
+            }
 
             sw.Stop();
+            elapsedMs = sw.ElapsedMilliseconds;
 
-            return new MonitoringResult(target.Name, isUp, sw.ElapsedMilliseconds, target.Id, startTime, DateTimeOffset.UtcNow);
+            return new MonitoringResult(target.Name, isUp, elapsedMs, target.Id, startTime, DateTimeOffset.UtcNow);
         }
 
         private async Task RetrieveAllTargetsForMonitoring()
         {
             using var scope = _serviceProvider.CreateScope();
             var monitoringTargetService = scope.ServiceProvider.GetRequiredService<IMonitoringTargetService>();
-
             var monitoringTargetsList = await monitoringTargetService.GetAllAsync();
 
             foreach (var monitoringTarget in monitoringTargetsList)
@@ -241,29 +218,85 @@ namespace UpTulse.WebApi.BackgroundWorkers
             }
         }
 
+        private async Task SaveAndBroadcastResult(MonitoringResult result)
+        {
+            LogInfo(result);
+
+            using var monitoringScope = _serviceProvider.CreateScope();
+            var monitoringHistoryService = monitoringScope.ServiceProvider.GetRequiredService<IMonitoringHistoryService>();
+
+            await monitoringHistoryService.AddNewRecord(new()
+            {
+                IsUp = result.IsUp,
+                MonitoringTargetId = result.TargetId,
+                StartTimeStamp = result.StartTimeStamp,
+                EndTimeStamp = result.EndTimeStamp,
+                ResponseTimeInMs = result.ResponseTimeMs,
+            });
+
+            await _notificationSseManager.BroadcastAsync(result);
+
+            bool? isUpStateChange = null;
+
+            lock (_monitoringResults)
+            {
+                var targetHistory = _monitoringResults
+                    .Where(r => r.TargetId == result.TargetId)
+                    .OrderBy(r => r.StartTimeStamp)
+                    .ToList();
+
+                if (targetHistory.Count < 3)
+                {
+                    _monitoringResults.Add(result);
+                }
+                else
+                {
+                    var allDown = targetHistory.All(r => !r.IsUp);
+                    var isCurrentlyUnavailable = _unavailableTargetsGuids.Contains(result.TargetId);
+
+                    if (!allDown && isCurrentlyUnavailable)
+                    {
+                        _unavailableTargetsGuids.Remove(result.TargetId);
+                        isUpStateChange = true;
+                    }
+                    else if (allDown && !isCurrentlyUnavailable)
+                    {
+                        _unavailableTargetsGuids.Add(result.TargetId);
+                        isUpStateChange = false;
+                    }
+
+                    _monitoringResults.RemoveAll(r => r.TargetId == result.TargetId);
+                }
+            }
+
+            if (isUpStateChange.HasValue)
+            {
+                await MonitoringTargetStateIsChanged(result, isUpStateChange.Value);
+            }
+        }
+
         private void StartMonitor(MonitoringTargetRequest target)
         {
             StopMonitor(target.Name);
 
             var cts = new CancellationTokenSource();
-            _runningMonitors[target.Name] = cts;
-
-            _ = Task.Run(() => MonitorLoopAsync(target));
-
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (_runningMonitors.TryAdd(target.Name, cts))
             {
-                _logger.LogInformation("Started monitoring {Name} every {Sec}s", target.Name, target.Interval.TotalSeconds);
+                _ = Task.Run(() => MonitorLoopAsync(target, cts.Token), cts.Token);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Started monitoring {Name} every {Sec}s", target.Name, target.Interval.TotalSeconds);
+                }
             }
         }
 
         private void StopMonitor(string name)
         {
-            if (_runningMonitors.TryGetValue(name, out var cts))
+            if (_runningMonitors.TryRemove(name, out var cts))
             {
                 cts.Cancel();
                 cts.Dispose();
-
-                _runningMonitors.Remove(name);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
