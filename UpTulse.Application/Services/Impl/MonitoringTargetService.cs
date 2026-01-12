@@ -59,7 +59,7 @@ namespace UpTulse.Application.Services.Impl
 
             var response = await _monitoringTargetRepository.AddAsync(newMonitoringTarget);
 
-            await _monitoringManagerService.AddOrUpdateExistTargetAsync(request);
+            await _monitoringManagerService.AddTargetAsync(request);
 
             return await ReturnAfterMap(response);
         }
@@ -126,7 +126,7 @@ namespace UpTulse.Application.Services.Impl
             updatedTargetToRequestFacet.ApplyFacet(updatedRecord);
 
             await _monitoringManagerService.RemoveTargetAsync(oldRecord.Name);
-            await _monitoringManagerService.AddOrUpdateExistTargetAsync(updatedTargetToRequestFacet);
+            await _monitoringManagerService.AddTargetAsync(updatedTargetToRequestFacet);
 
             return await ReturnAfterMap(updatedRecord);
         }

@@ -14,7 +14,6 @@ namespace UpTulse.WebApi.BackgroundWorkers
         private readonly ILogger<UptimeBackgroundWorker> _logger;
         private readonly IMonitoringTargetsManager _monitoringManager;
         private readonly List<MonitoringResult> _monitoringResults;
-        private readonly Dictionary<string, string> _monitoringTotalResult;
         private readonly INotificationSseManager _notificationSseManager;
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _runningMonitors;
         private readonly IServiceProvider _serviceProvider;
@@ -31,7 +30,6 @@ namespace UpTulse.WebApi.BackgroundWorkers
             _logger = logger;
             _notificationSseManager = notificationSseManager;
             _monitoringManager = monitoringManager;
-            _monitoringTotalResult = [];
             _monitoringResults = [];
             _unavailableTargetsGuids = [];
             _runningMonitors = new ConcurrentDictionary<string, CancellationTokenSource>();
@@ -71,32 +69,11 @@ namespace UpTulse.WebApi.BackgroundWorkers
             {
                 _logger.LogError(ex, "Reactive Uptime Worker encountered a fatal error reading operations.");
             }
-
-            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
 
         private void LogInfo(MonitoringResult result)
         {
-            if (_monitoringTotalResult.Count < _runningMonitors.Count)
-            {
-                _monitoringTotalResult.TryAdd(result.Name, result.IsUp ? "UP" : "DOWN");
-            }
-            else
-            {
-                _monitoringTotalResult[result.Name] = result.IsUp ? "UP" : "DOWN";
-            }
-
-            if (_monitoringTotalResult.Count == _runningMonitors.Count)
-            {
-                Console.WriteLine($"\n-- Results -----------------------------------------------------------------");
-                foreach (var kvp in _monitoringTotalResult)
-                {
-                    Console.WriteLine($"-- {kvp.Key}: ({kvp.Value}) TIMESTAMP: {DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(_utcOffset))}");
-                }
-                Console.WriteLine($"\n");
-
-                _monitoringTotalResult.Clear();
-            }
+            Console.WriteLine($"-- {result.Name}: ({(result.IsUp ? "UP" : "DOWN")}) TIMESTAMP: {DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(_utcOffset))}");
         }
 
         private async Task MonitoringTargetStateIsChanged(MonitoringResult result, bool isUp)
@@ -167,15 +144,10 @@ namespace UpTulse.WebApi.BackgroundWorkers
             bool isUp = false;
             var startTime = DateTimeOffset.UtcNow;
 
-            // Optimization: avoid allocations of Stopwatch class if possible, or use struct-based ValueStopwatch
-            // Standard Stopwatch is fine here, but we ensure precise counting.
             var sw = Stopwatch.StartNew();
 
             try
             {
-                // To further optimize, if IProtocolProvider implementations are thread-safe and
-                // stateless, they should be cached or resolved fewer times. Assuming they might be
-                // Scoped (e.g. HttpClient per request).
                 using var protocolResolverScope = _serviceProvider.CreateScope();
                 var protocolResolverService = protocolResolverScope.ServiceProvider.GetRequiredService<IMonitoringProtocolResolver>();
                 var protocolResolver = protocolResolverService.GetProtocolProvider(target.Protocol);

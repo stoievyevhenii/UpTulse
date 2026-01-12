@@ -19,7 +19,7 @@ namespace UpTulse.Application.Managers.Impl
 
         public ChannelReader<MonitoringOperation> OperationReader => _channel.Reader;
 
-        public async Task AddOrUpdateExistTargetAsync(MonitoringTargetRequest target)
+        public async Task AddTargetAsync(MonitoringTargetRequest target)
         {
             _targets.AddOrUpdate(target.Name, target, (_, _) => target);
             await _channel.Writer.WriteAsync(new MonitoringOperation(target, OperationType.Add));
