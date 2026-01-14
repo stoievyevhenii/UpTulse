@@ -4,6 +4,8 @@
     margin: var(--padding) 0;
     padding: var(--padding);
     cursor: pointer;
+    display: flex;
+    align-items: center;
     border-radius: var(--border-radius);
 }
 

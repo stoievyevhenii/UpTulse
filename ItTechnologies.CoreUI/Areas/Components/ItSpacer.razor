@@ -1,0 +1,13 @@
+﻿<div class="spacer" style="min-height: @(Height + "px"); flex: @Flex; min-width: @(Width + "px")"></div>
+
+@code
+{
+    [Parameter]
+    public string Height { get; set; } = "0";
+
+    [Parameter]
+    public string Width { get; set; } = "0";
+
+    [Parameter]
+    public string? Flex { get; set; } = null;
+}

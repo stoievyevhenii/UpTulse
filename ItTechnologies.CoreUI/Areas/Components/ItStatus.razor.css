@@ -1,0 +1,26 @@
+.wrapper {
+    padding: var(--it-padding);
+    margin-right: var(--it-padding);
+}
+
+.indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 100%;
+}
+
+.it-status--active {
+    background-color: var(--it-status--active);
+}
+
+.it-status--inactive {
+    background-color: var(--it-status--inactive);
+}
+
+.it-status--pending {
+    background-color: var(--it-status--pending);
+}
+
+.it-status--archive {
+    background-color: var(--it-status--archive);
+}

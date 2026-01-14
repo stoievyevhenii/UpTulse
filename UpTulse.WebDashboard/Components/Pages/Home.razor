@@ -11,15 +11,18 @@
 
 <PageTitle>Home</PageTitle>
 
-@foreach (var message in Messages)
+@foreach (var message in Messages.OrderByDescending(r => r.Name))
 {
-    <ItCard>
-        <ItText Style="ItTextStyle.CardTitle" Text="@message" />
+    <ItCard ContentIsHorizontal>
+        <ItStatus Status="@(message.IsUp? ItStatuses.Active : ItStatuses.Inactive)" />
+        <ItText Style="ItTextStyle.CardTitle" Text="@message.Name" />
+        <ItSpacer Flex="1" />
+        <ItText Style="ItTextStyle.CardSubtitle" Text="@message.EndTimeStamp.ToLocalTime().ToString("G")" />
     </ItCard>
 }
 
 @code {
-    private readonly List<string> Messages = new();
+    private readonly List<MonitoringResult> Messages = new();
     private DotNetObjectReference<Home>? objRef;
 
     protected override async Task OnInitializedAsync()
@@ -42,7 +45,15 @@
         {
             await InvokeAsync(() =>
             {
-                Messages.Add(data);
+                var recievedRecord = System.Text.Json.JsonSerializer.Deserialize<MonitoringResult>(data);
+
+                Messages.RemoveAll(x => x.Name == recievedRecord?.Name);
+
+                if (recievedRecord != null)
+                {
+                    Messages.Add(recievedRecord);
+                }
+
                 StateHasChanged();
             });
         }

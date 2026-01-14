@@ -1,0 +1,19 @@
+﻿@using ItTechnologies.CoreUI.Areas.Enums
+
+<div class="wrapper">
+    <div class="indicator @StatusCssClass"></div>
+</div>
+
+@code {
+    [Parameter]
+    public ItStatuses Status { get; set; } = ItStatuses.Pending;
+
+    private string StatusCssClass => Status switch
+    {
+        ItStatuses.Active => "it-status--active",
+        ItStatuses.Inactive => "it-status--inactive",
+        ItStatuses.Pending => "it-status--pending",
+        ItStatuses.Archived => "it-status--archive",
+        _ => "it-status--unknown"
+    };
+}

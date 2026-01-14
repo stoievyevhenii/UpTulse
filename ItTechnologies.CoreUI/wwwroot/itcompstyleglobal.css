@@ -1,0 +1,7 @@
+:root {
+    --it-status--active: #36ab5a;
+    --it-status--inactive: #d33817;
+    --it-status--pending: #f59400;
+    --it-status--archive: #595959;
+    --it-padding: 8px;
+}
