@@ -19,8 +19,10 @@
     flex: 1;
 }
 
-.total-info-wrapper{
+.total-info-wrapper {
     display: flex;
+    position: sticky;
+    top: calc(var(--top-row-height) + var(--padding));
     flex-direction: row;
     gap: var(--padding);
     margin-top: var(--padding);
