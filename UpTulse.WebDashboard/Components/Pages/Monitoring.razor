@@ -1,4 +1,7 @@
-﻿@using ItTechnologies.CoreUI.Areas.Enums
+﻿@page "/"
+@rendermode InteractiveServer
+
+@using ItTechnologies.CoreUI.Areas.Enums
 @using System.Net.ServerSentEvents
 @using UpTulse.Application.Models
 @using UpTulse.WebDashboard.EnvironmentVariables
@@ -6,26 +9,38 @@
 @inject IJSRuntime JS
 @implements IDisposable
 
-@foreach (var message in Messages
-    .GroupBy(m => m.Name)
-    .Select(g => g.OrderByDescending(x => x.EndTimeStamp).First())
-    .OrderBy(m => m.Name))
-{
-    <ItCard ContentIsHorizontal>
-        <div class="wrapper">
-            <div class="block bigger">
-                <ItStatus Status="@(message.IsUp? ItStatuses.Active : ItStatuses.Inactive)" />
-                <ItText Style="ItTextStyle.CardTitle" Text="@message.Name" />
-            </div>
-            <div class="block" style="justify-content: center;">
-                <ItText Style="ItTextStyle.CardSubtitle" Text="@(String.Concat(message.ResponseTimeMs.ToString(), " ms"))" />
-            </div>
-            <div class="block" style="justify-content: end;">
-                <ItText Style="ItTextStyle.CardSubtitle" Text="@message.EndTimeStamp.ToLocalTime().ToString("G")" />
-            </div>
+
+<ItPageWidthLimiter>
+    <div class="total-info-wrapper">
+        <div class="card-info">
+            <div>1</div>
         </div>
-    </ItCard>
-}
+        <div class="card-info">
+            <div>2</div>
+        </div>
+        <div class="card-info">
+            <div>3</div>
+        </div>
+    </div>
+
+    @foreach (var message in Messages
+        .GroupBy(m => m.Name)
+        .Select(g => g.OrderByDescending(x => x.EndTimeStamp).First())
+        .OrderBy(m => m.Name))
+    {
+        <ItCard HeaderLeft="@message.EndTimeStamp.ToLocalTime().ToString("G")" HeaderRight="@(String.Concat(message.ResponseTimeMs.ToString(), " ms"))">
+            <div class="wrapper">
+                <div class="block bigger">
+                    <ItStatus Status="@(message.IsUp? ItStatuses.Active : ItStatuses.Inactive)" />
+                    <ItText Style="ItTextStyle.CardTitle" Text="@message.Name" />
+                </div>
+                <div class="block"></div>
+            </div>
+        </ItCard>
+    }
+</ItPageWidthLimiter>
+
+
 
 @code {
     private List<MonitoringResult> Messages = new();

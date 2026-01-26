@@ -1,11 +1,23 @@
 ﻿<div class="wrapper" style="flex-direction:@(ContentIsHorizontal ? "row" : "column")">
-    @ChildContent
+    <div class="header">
+        <div>@HeaderLeft</div>
+        <div class="main">@HeaderRight</div>
+    </div>
+    <div class="body">
+        @ChildContent
+    </div>
 </div>
 
 @code {
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
-    
+
     [Parameter]
     public bool ContentIsHorizontal { get; set; } = false;
+
+    [Parameter]
+    public string HeaderLeft { get; set; } = string.Empty;
+
+    [Parameter]
+    public string HeaderRight { get; set; } = string.Empty;
 }
