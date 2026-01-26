@@ -251,6 +251,7 @@ namespace UpTulse.DataAccess.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.PrimitiveCollection<List<string>>("Receivers")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.HasKey("Id");

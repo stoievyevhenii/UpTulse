@@ -13,8 +13,8 @@ using UpTulse.DataAccess.Persistence;
 namespace UpTulse.DataAccess.Persistence.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260126071431_AddedRecieversToMonitoringTarget")]
-    partial class AddedRecieversToMonitoringTarget
+    [Migration("20260126085319_UpdateRecieversToMonitoringTargetNull")]
+    partial class UpdateRecieversToMonitoringTargetNull
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -26,6 +26,6 @@ namespace UpTulse.Core.Entities
         public NotificationChannel NotificationChannel { get; set; } = NotificationChannel.None;
         public bool Paused { get; set; } = false;
         public MonitoringProtocol Protocol { get; set; } = MonitoringProtocol.Ping;
-        public List<string>? Receivers { get; set; } = [];
+        public List<string> Receivers { get; set; } = [""];
     }
 }

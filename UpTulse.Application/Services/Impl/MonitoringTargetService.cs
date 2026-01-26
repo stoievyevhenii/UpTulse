@@ -120,6 +120,11 @@ namespace UpTulse.Application.Services.Impl
                 oldRecord.GroupId = request.GroupId != oldRecord.GroupId ? request.GroupId.Value : oldRecord.GroupId;
             }
 
+            if (request.Receivers is not null && request.Receivers.Count > 0)
+            {
+                oldRecord.Receivers = request.Receivers;
+            }
+
             var updatedRecord = await _monitoringTargetRepository.UpdateAsync(oldRecord);
 
             var updatedTargetToRequestFacet = new MonitoringTargetRequest();
