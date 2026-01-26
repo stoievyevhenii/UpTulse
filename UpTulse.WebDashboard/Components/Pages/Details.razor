@@ -1,7 +1,29 @@
 ﻿@page "/details"
+@using ItTechnologies.CoreUI.Areas.Enums
 
-<h3>Details</h3>
+<h3>Sales Performance (Linear Style)</h3>
+
+<div style="margin-bottom: 20px;">
+    <button class="btn btn-primary" @onclick="GenerateData">Refresh Data</button>
+</div>
+
+<ItLinearGraph DataPoints="@salesData"
+               LineColor="#28a745"
+               DotColor="#17a2b8" />
 
 @code {
+    private List<double> salesData = new();
 
+    protected override void OnInitialized()
+    {
+        GenerateData();
+    }
+
+    private void GenerateData()
+    {
+        var rnd = new Random();
+        salesData = Enumerable.Range(0, 10)
+                              .Select(x => (double)rnd.Next(10, 100))
+                              .ToList();
+    }
 }

@@ -1,0 +1,123 @@
+﻿@using System.Globalization
+@using System.Linq
+
+<div class="chart-container">
+    <svg viewBox="0 0 @InternalWidth @InternalHeight"
+         preserveAspectRatio="none"
+         class="fluid-svg"
+         @onmouseleave="HideTooltip">
+
+        @for (int i = 0; i <= 5; i++)
+        {
+            var y = InternalHeight - (Padding + (i * ((InternalHeight - 2 * Padding) / 5.0)));
+            <line x1="@Padding" y1="@ToSvg(y)" x2="@ToSvg(InternalWidth - Padding)" y2="@ToSvg(y)" stroke="#eee" stroke-width="2" />
+        }
+
+        <polyline points="@_pointsString" fill="none" stroke="@LineColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+        @foreach (var point in _calculatedPoints)
+        {
+            <g @onmouseenter="() => ShowTooltip(point)"
+               @onmouseleave="HideTooltip"
+               style="cursor: pointer;">
+
+                <circle cx="@ToSvg(point.X)" cy="@ToSvg(point.Y)" r="20" fill="transparent" />
+
+                <circle cx="@ToSvg(point.X)" cy="@ToSvg(point.Y)" r="6" fill="@DotColor" pointer-events="none" />
+            </g>
+        }
+
+        @if (_activePoint.HasValue)
+        {
+            <g transform="translate(@ToSvg(_activePoint.Value.X), @ToSvg(_activePoint.Value.Y))"
+               style="pointer-events: none;">
+
+                @{
+                    bool isRightSide = _activePoint.Value.X > (InternalWidth / 2);
+                    double xOffset = isRightSide ? -130 : 10;
+                    double yOffset = -55;
+                }
+
+                <rect x="@ToSvg(xOffset)" y="@ToSvg(yOffset)" width="120" height="45" rx="6" fill="#222" opacity="0.9" />
+
+                <polygon points="@(isRightSide ? "-10,-10 0,0 -10,0" : "10,-10 0,0 10,0")"
+                         transform="translate(@ToSvg(isRightSide ? -5 : 5), -10)" fill="#222" />
+
+                <text x="@ToSvg(xOffset + 60)" y="@ToSvg(yOffset + 28)"
+                      fill="white"
+                      font-size="20"
+                      text-anchor="middle"
+                      font-family="sans-serif"
+                      font-weight="bold">
+                    @_activePoint.Value.Value
+                </text>
+            </g>
+        }
+    </svg>
+</div>
+
+@code {
+    [Parameter] public List<double> DataPoints { get; set; } = new();
+    [Parameter] public string LineColor { get; set; } = "#2563eb";
+    [Parameter] public string DotColor { get; set; } = "#ffffff";
+
+    private const double InternalWidth = 1000;
+    private const double InternalHeight = 500;
+    private const double Padding = 50;
+
+    private struct SvgPoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Value { get; set; }
+    }
+
+    private List<SvgPoint> _calculatedPoints = new();
+    private SvgPoint? _activePoint;
+    private string _pointsString = "";
+
+    protected override void OnParametersSet()
+    {
+        CalculatePoints();
+    }
+
+    private void ShowTooltip(SvgPoint point)
+    {
+        _activePoint = point;
+    }
+
+    private void HideTooltip()
+    {
+        _activePoint = null;
+    }
+
+    private string ToSvg(double value) => value.ToString("F2", CultureInfo.InvariantCulture);
+
+    private void CalculatePoints()
+    {
+        if (DataPoints == null || !DataPoints.Any()) return;
+
+        _calculatedPoints.Clear();
+        double min = DataPoints.Min();
+        double max = DataPoints.Max();
+        double range = (max - min) == 0 ? 1 : (max - min);
+        double drawableWidth = InternalWidth - (2 * Padding);
+        double drawableHeight = InternalHeight - (2 * Padding);
+        double stepX = DataPoints.Count > 1 ? drawableWidth / (DataPoints.Count - 1) : 0;
+
+        var sb = new System.Text.StringBuilder();
+
+        for (int i = 0; i < DataPoints.Count; i++)
+        {
+            double value = DataPoints[i];
+            double normalizedY = (value - min) / range;
+            double y = (InternalHeight - Padding) - (normalizedY * drawableHeight);
+            double x = Padding + (i * stepX);
+
+            var p = new SvgPoint { X = x, Y = y, Value = value };
+            _calculatedPoints.Add(p);
+            sb.Append($"{ToSvg(x)},{ToSvg(y)} ");
+        }
+        _pointsString = sb.ToString();
+    }
+}
