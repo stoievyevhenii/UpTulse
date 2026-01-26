@@ -8,3 +8,9 @@
     font-weight: 500;
     color: gray;
 }
+
+.it-text-group {
+    color: var(--unactive-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+}

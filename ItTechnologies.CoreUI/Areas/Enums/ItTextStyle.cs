@@ -5,6 +5,7 @@
         CardTitle,
         CardSubtitle,
         PageTitle,
+        Group,
         Default
     }
 }

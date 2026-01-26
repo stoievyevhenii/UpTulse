@@ -9,21 +9,25 @@
 @inject IJSRuntime JS
 @implements IDisposable
 
-
 <ItPageWidthLimiter>
     <div class="total-info-wrapper">
         <div class="card-info">
-            <div>1</div>
+            <ItStateCard Title="Total" Value="@_total.ToString()" />
         </div>
         <div class="card-info">
-            <div>2</div>
+            <ItStateCard Title="Up" Value="@_up.ToString()" IsActive="true"/>
         </div>
         <div class="card-info">
-            <div>3</div>
+            <ItStateCard Title="Down" Value="@_down.ToString()" IsActive="false" />
         </div>
     </div>
+    
+    <ItSpacer Height="24" />
+    <ItText Text="Targets" Style="ItTextStyle.Group"/>
+    <ItSpacer Height="24"/>
 
-    @foreach (var message in Messages
+    <div class="content">
+           @foreach (var message in Messages
         .GroupBy(m => m.Name)
         .Select(g => g.OrderByDescending(x => x.EndTimeStamp).First())
         .OrderBy(m => m.Name))
@@ -38,13 +42,16 @@
             </div>
         </ItCard>
     }
+    </div>
 </ItPageWidthLimiter>
 
-
-
-@code {
+    @code {
     private List<MonitoringResult> Messages = new();
     private DotNetObjectReference<Monitoring>? objRef;
+
+    private int _total;
+    private int _up;
+    private int _down;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,6 +65,19 @@
         {
             Console.WriteLine($"JS Error: {ex.Message}");
         }
+    }
+
+    private void CalculateStatistics()
+    {
+
+        var groupedMessages = Messages.GroupBy(m => m.Name);
+        var firstFromGroup = groupedMessages
+            .Select(g => g.OrderByDescending(x => x.EndTimeStamp)
+            .First());
+
+        _total = groupedMessages.Count();
+        _up = firstFromGroup.Count(m => m.IsUp);
+        _down = firstFromGroup.Count(m => !m.IsUp);
     }
 
     [JSInvokable]
@@ -80,6 +100,7 @@
                 }
 
                 Messages = Messages.OrderByDescending(r => r.EndTimeStamp).ToList();
+                CalculateStatistics();
 
                 StateHasChanged();
             });

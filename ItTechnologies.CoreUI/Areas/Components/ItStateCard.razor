@@ -1,0 +1,24 @@
+﻿<div class="wrapper @CardCssClass">
+    <div class="title">
+        <ItText Text="@Title" Style="Enums.ItTextStyle.CardTitle"/>
+    </div>
+    <div class="value">@Value</div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool? IsActive { get; set; } = null;
+
+    private string CardCssClass => IsActive switch
+    {
+        true => "it-state-card--active",
+        false => "it-state-card--inactive",
+        null => "it-state-card--unknown"
+    };
+}

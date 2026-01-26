@@ -22,15 +22,14 @@
 .total-info-wrapper {
     display: flex;
     position: sticky;
-    top: calc(var(--top-row-height) + var(--padding));
+    top: calc(var(--top-row-height));
     flex-direction: row;
     gap: var(--padding);
-    margin-top: var(--padding);
-    background-color: pink;
+    padding-bottom: var(--padding);
+    padding-top: var(--padding);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.5));
 }
 
 .card-info {
-    background-color: red;
     flex: 1;
-    min-height: 120px;
 }
