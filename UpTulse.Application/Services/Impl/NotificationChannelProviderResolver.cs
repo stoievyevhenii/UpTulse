@@ -6,11 +6,18 @@ namespace UpTulse.Application.Services.Impl
 {
     public class NotificationChannelProviderResolver : INotificationChannelProviderResolver
     {
+        private readonly IMonitoringTargetService _monitoringTargetService;
+
+        public NotificationChannelProviderResolver(IMonitoringTargetService monitoringTargetService)
+        {
+            _monitoringTargetService = monitoringTargetService;
+        }
+
         public NotificationChannelProviderCreator GetProviderCreator(NotificationChannel channel)
         {
             return channel switch
             {
-                NotificationChannel.Email => new EmailChannelProviderCreator(),
+                NotificationChannel.Email => new EmailChannelProviderCreator(_monitoringTargetService),
                 NotificationChannel.None => new EmptyChannelProviderCreator(),
                 NotificationChannel.OneSignal => new OneSignalChannelProviderCreator(),
                 _ => throw new NotImplementedException()

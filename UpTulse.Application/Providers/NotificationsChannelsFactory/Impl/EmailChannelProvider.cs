@@ -3,6 +3,7 @@ using System.Net.Mail;
 
 using UpTulse.Application.Models;
 using UpTulse.Application.Providers.NotificationsFactory;
+using UpTulse.Application.Services;
 using UpTulse.DataAccess.EnvironmentVariables;
 
 namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
@@ -11,18 +12,15 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
     {
         private readonly string _smtpPass;
         private readonly int _smtpPort;
-        private readonly List<string> _smtpSendToList;
         private readonly string _smtpServer;
         private readonly string _smtpUser;
 
-        public EmailChannelProvider()
+        public EmailChannelProvider(IMonitoringTargetService monitoringTargetService)
         {
             _smtpServer = Environment.GetEnvironmentVariable(NotificationsEnv.SMTP_HOST) ?? string.Empty;
             _smtpPort = int.TryParse(Environment.GetEnvironmentVariable(NotificationsEnv.SMTP_PORT), out var port) ? port : 587;
             _smtpUser = Environment.GetEnvironmentVariable(NotificationsEnv.SMTP_USER) ?? string.Empty;
             _smtpPass = Environment.GetEnvironmentVariable(NotificationsEnv.SMTP_PASS) ?? string.Empty;
-            _smtpSendToList = [.. (Environment.GetEnvironmentVariable(NotificationsEnv.SMTP_SEND_TO) ?? string.Empty)
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)];
         }
 
         public async Task<bool> SendNotification(NotificationContext context)
@@ -45,7 +43,7 @@ namespace UpTulse.Application.Providers.NotificationsChannelsFactory.Impl
                     IsBodyHtml = true
                 };
 
-                foreach (var recipient in _smtpSendToList)
+                foreach (var recipient in context.Receivers)
                 {
                     mail.To.Add(recipient);
                 }

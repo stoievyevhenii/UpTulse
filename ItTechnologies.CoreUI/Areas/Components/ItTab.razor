@@ -1,0 +1,30 @@
+﻿@using ItTechnologies.CoreUI.Exceptions
+﻿@if (Parent.ActivePage == this)
+{
+    <div class="tab-page-container">
+        @ChildContent
+    </div>
+}
+
+@code
+{
+    [CascadingParameter]
+    private ItTabsContainer Parent { get; set; } = new();
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; } = null;
+
+    [Parameter]
+    public string Title { get; set; } = "N/A";
+
+    protected override void OnInitialized()
+    {
+        if (Parent is null)
+        {
+            throw new ComponentNullException("TabPage must exist within a TabControl");
+        }
+
+        base.OnInitialized();
+        Parent.AddPage(this);
+    }
+}

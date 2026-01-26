@@ -1,0 +1,64 @@
+﻿<CascadingValue Value="this">
+    <div class="container @VerticalClassStyles">
+        <div class="wrapper @VerticalButtonsClassStyles" role="group">
+            @foreach (ItTab tabPage in Pages)
+            {
+                <button type="button"
+                        class="tab-btn @GetButtonClass(tabPage) @VerticalButtonClassStyles"
+                        onclick=@( () => ActivatePage(tabPage) )>
+                    @tabPage.Title
+                </button>
+            }
+        </div>
+        <div class="page">
+            @ChildContent
+        </div>
+    </div>
+</CascadingValue>
+
+@code
+{
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Vertical { get; set; }
+
+    private string? VerticalClassStyles => Vertical ? "vertical" : null;
+    private string? VerticalButtonsClassStyles => Vertical ? "vertical-buttons" : null;
+    private string? VerticalButtonClassStyles => Vertical ? "vertical-button" : null;
+
+    public ItTab? ActivePage { get; set; }
+    private readonly List<ItTab> Pages = new List<ItTab>();
+
+    internal void AddPage(ItTab tabPage)
+    {
+        Pages.Add(tabPage);
+
+        if (Pages.Count == 1)
+            ActivePage = tabPage;
+
+        StateHasChanged();
+    }
+
+    string GetButtonClass(ItTab page)
+    {
+        if (Vertical)
+        {
+            return page == ActivePage ? "selected-vertical-tab" : "";
+
+        }
+        else
+        {
+            return page == ActivePage ? "selected-tab" : "";
+
+        }
+
+    }
+
+    void ActivatePage(ItTab page)
+    {
+        ActivePage = page;
+        StateHasChanged();
+    }
+}

@@ -6,58 +6,20 @@
 @using UpTulse.Application.Models
 @using UpTulse.WebDashboard.EnvironmentVariables
 
-@inject IJSRuntime JS
-@implements IDisposable
-
 <PageTitle>Home</PageTitle>
 
-@foreach (var message in Messages.OrderByDescending(r => r.Name))
-{
-    <ItCard ContentIsHorizontal>
-        <ItStatus Status="@(message.IsUp? ItStatuses.Active : ItStatuses.Inactive)" />
-        <ItText Style="ItTextStyle.CardTitle" Text="@message.Name" />
-        <ItSpacer Flex="1" />
-        <ItText Style="ItTextStyle.CardSubtitle" Text="@message.EndTimeStamp.ToLocalTime().ToString("G")" />
-    </ItCard>
-}
+<ItTabsContainer>
+    <ItTab Title="Profile">
+        <ItPageWidthLimiter>
+            <Monitoring />
+        </ItPageWidthLimiter>
+    </ItTab>
 
-@code {
-    private readonly List<MonitoringResult> Messages = new();
-    private DotNetObjectReference<Home>? objRef;
+    <ItTab Title="Details">
+        <Details />
+    </ItTab>
 
-    protected override async Task OnInitializedAsync()
-    {
-        objRef = DotNetObjectReference.Create(this);
-        try
-        {
-            await JS.InvokeVoidAsync("sseHandlers.connect", objRef, Environment.GetEnvironmentVariable(SystemEnv.SERVER_URL) ?? string.Empty);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"JS Error: {ex.Message}");
-        }
-    }
-
-    [JSInvokable]
-    public async Task ReceiveMessage(string data)
-    {
-        if (!string.IsNullOrEmpty(data))
-        {
-            await InvokeAsync(() =>
-            {
-                var recievedRecord = System.Text.Json.JsonSerializer.Deserialize<MonitoringResult>(data);
-
-                Messages.RemoveAll(x => x.Name == recievedRecord?.Name);
-
-                if (recievedRecord != null)
-                {
-                    Messages.Add(recievedRecord);
-                }
-
-                StateHasChanged();
-            });
-        }
-    }
-
-    public void Dispose() => objRef?.Dispose();
-}
+    <ItTab Title="Settings">
+        <Settings />
+    </ItTab>
+</ItTabsContainer>

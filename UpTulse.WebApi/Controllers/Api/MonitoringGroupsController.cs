@@ -34,7 +34,7 @@ namespace UpTulse.WebApi.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(MonitoringGroupRequest request)
+        public async Task<IActionResult> Post([FromBody] MonitoringGroupRequest request)
         {
             return Ok(ApiResult<MonitoringGroupResponse>.Success(await _monitoringGroupService.CreateAsync(request)));
         }

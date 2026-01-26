@@ -1,0 +1,67 @@
+﻿@using ItTechnologies.CoreUI.Areas.Enums
+@using System.Net.ServerSentEvents
+@using UpTulse.Application.Models
+@using UpTulse.WebDashboard.EnvironmentVariables
+
+@inject IJSRuntime JS
+@implements IDisposable
+
+@foreach (var message in Messages.OrderByDescending(r => r.Name))
+{
+    <ItCard ContentIsHorizontal>
+        <div class="wrapper">
+            <div class="block bigger">
+                <ItStatus Status="@(message.IsUp? ItStatuses.Active : ItStatuses.Inactive)" />
+                <ItText Style="ItTextStyle.CardTitle" Text="@message.Name" />
+            </div>
+            <div class="block" style="justify-content: center;">
+                <ItText Style="ItTextStyle.CardSubtitle" Text="@(String.Concat(message.ResponseTimeMs.ToString(), " ms"))" />
+            </div>
+            <div class="block" style="justify-content: end;">
+                <ItText Style="ItTextStyle.CardSubtitle" Text="@message.EndTimeStamp.ToLocalTime().ToString("G")" />
+            </div>
+        </div>
+    </ItCard>
+}
+
+@code {
+    private readonly List<MonitoringResult> Messages = new();
+    private DotNetObjectReference<Monitoring>? objRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        objRef = DotNetObjectReference.Create(this);
+
+        try
+        {
+            await JS.InvokeVoidAsync("sseHandlers.connect", objRef, Environment.GetEnvironmentVariable(SystemEnv.SERVER_URL) ?? string.Empty);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"JS Error: {ex.Message}");
+        }
+    }
+
+    [JSInvokable]
+    public async Task ReceiveMessage(string data)
+    {
+        if (!string.IsNullOrEmpty(data))
+        {
+            await InvokeAsync(() =>
+            {
+                var recievedRecord = System.Text.Json.JsonSerializer.Deserialize<MonitoringResult>(data);
+
+                Messages.RemoveAll(x => x.Name == recievedRecord?.Name);
+
+                if (recievedRecord != null)
+                {
+                    Messages.Add(recievedRecord);
+                }
+
+                StateHasChanged();
+            });
+        }
+    }
+
+    public void Dispose() => objRef?.Dispose();
+}

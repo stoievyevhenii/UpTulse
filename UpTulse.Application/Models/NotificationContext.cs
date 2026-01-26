@@ -10,6 +10,7 @@ namespace UpTulse.Application.Models
         public bool IsAvailabilityCritical { get; set; }
         public bool IsUnavailabilityCritical { get; set; }
         public bool IsUp { get; set; }
+        public List<string> Receivers { get; set; } = [];
         public string Subject { get; set; } = default!;
     }
 }
