@@ -6,7 +6,10 @@
 @inject IJSRuntime JS
 @implements IDisposable
 
-@foreach (var message in Messages.OrderByDescending(r => r.Name))
+@foreach (var message in Messages
+    .GroupBy(m => m.Name)
+    .Select(g => g.OrderByDescending(x => x.EndTimeStamp).First())
+    .OrderBy(m => m.Name))
 {
     <ItCard ContentIsHorizontal>
         <div class="wrapper">
@@ -25,7 +28,7 @@
 }
 
 @code {
-    private readonly List<MonitoringResult> Messages = new();
+    private List<MonitoringResult> Messages = new();
     private DotNetObjectReference<Monitoring>? objRef;
 
     protected override async Task OnInitializedAsync()
@@ -51,12 +54,17 @@
             {
                 var recievedRecord = System.Text.Json.JsonSerializer.Deserialize<MonitoringResult>(data);
 
-                Messages.RemoveAll(x => x.Name == recievedRecord?.Name);
+                Messages = Messages.OrderBy(r => r.EndTimeStamp).ToList();
+
+                if (Messages.Any(r => r.Name == recievedRecord?.Name) && Messages.Count(r => r.Name == recievedRecord?.Name) > 4)
+                    Messages.RemoveAt(0);
 
                 if (recievedRecord != null)
                 {
                     Messages.Add(recievedRecord);
                 }
+
+                Messages = Messages.OrderByDescending(r => r.EndTimeStamp).ToList();
 
                 StateHasChanged();
             });
